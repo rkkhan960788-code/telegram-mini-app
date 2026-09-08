@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sky Downloader</title>
+  <title>Sky Video</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -14,165 +14,178 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
       background: #0f1115;
       color: white;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
     }
 
-    .container {
-      max-width: 500px;
+    .app {
+      max-width: 520px;
       margin: auto;
-      padding: 25px 18px;
+      padding: 20px;
     }
 
-    .logo {
+    h1 {
       text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 25px;
+      margin: 20px 0 5px;
     }
 
-    .subtitle {
+    .sub {
       text-align: center;
-      color: #9ca3af;
-      margin-top: 8px;
-      margin-bottom: 30px;
+      color: #8b949e;
+      margin-bottom: 25px;
     }
 
-    .box {
+    .card {
       background: #191c23;
+      padding: 16px;
       border-radius: 18px;
-      padding: 18px;
     }
 
     input {
       width: 100%;
-      padding: 16px;
-      border: none;
-      outline: none;
+      padding: 15px;
+      border: 0;
+      outline: 0;
       border-radius: 12px;
-      background: #252a33;
+      background: #282d36;
       color: white;
-      font-size: 15px;
       margin-bottom: 12px;
+      font-size: 15px;
     }
 
     button {
       width: 100%;
-      padding: 16px;
-      border: none;
+      padding: 15px;
+      border: 0;
       border-radius: 12px;
-      background: #2ea6ff;
+      background: #229ed9;
       color: white;
       font-size: 16px;
       font-weight: bold;
-      cursor: pointer;
     }
 
-    button:active {
-      transform: scale(0.98);
-    }
-
-    #result {
+    .video-box {
       display: none;
-      margin-top: 18px;
-      background: #191c23;
-      padding: 18px;
+      margin-top: 20px;
+    }
+
+    video {
+      width: 100%;
       border-radius: 15px;
+      background: black;
     }
 
-    .status {
-      color: #9ca3af;
+    .download {
+      display: block;
       text-align: center;
-      margin-bottom: 12px;
+      text-decoration: none;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #20c997;
+      color: white;
+      font-weight: bold;
     }
 
-    .option {
-      background: #252a33;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 10px;
+    .error {
+      color: #ff6b6b;
+      margin-top: 12px;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="app">
 
-    <div class="logo">Sky Downloader</div>
+  <h1>Sky Video</h1>
 
-    <div class="subtitle">
-      Download videos easily
-    </div>
+  <div class="sub">
+    Paste a direct video link
+  </div>
 
-    <div class="box">
+  <div class="card">
 
-      <input
-        id="url"
-        type="url"
-        placeholder="Paste video URL here..."
+    <input
+      id="videoUrl"
+      type="url"
+      placeholder="https://example.com/video.mp4"
+    >
+
+    <button onclick="playVideo()">
+      Play Video
+    </button>
+
+    <div id="error" class="error"></div>
+
+    <div id="videoBox" class="video-box">
+
+      <video id="player" controls playsinline></video>
+
+      <a
+        id="download"
+        class="download"
+        target="_blank"
+        download
       >
-
-      <button onclick="processVideo()">
-        Download
-      </button>
-
-    </div>
-
-    <div id="result">
-
-      <div class="status" id="status">
-        Processing...
-      </div>
-
-      <div id="options"></div>
+        Download Video
+      </a>
 
     </div>
 
   </div>
 
-  <script>
+</div>
 
-    const tg = window.Telegram.WebApp;
+<script>
 
-    tg.ready();
-    tg.expand();
+  const tg = window.Telegram.WebApp;
 
-    function processVideo() {
+  tg.ready();
+  tg.expand();
 
-      const url = document.getElementById("url").value.trim();
+  function playVideo() {
 
-      if (!url) {
-        tg.showAlert("Please paste a video URL first.");
-        return;
-      }
+    const url = document
+      .getElementById("videoUrl")
+      .value
+      .trim();
 
-      const result = document.getElementById("result");
-      const status = document.getElementById("status");
-      const options = document.getElementById("options");
+    const error = document.getElementById("error");
+    const videoBox = document.getElementById("videoBox");
+    const player = document.getElementById("player");
+    const download = document.getElementById("download");
 
-      result.style.display = "block";
+    error.innerText = "";
 
-      status.innerText = "Checking video...";
-
-      options.innerHTML = "";
-
-      setTimeout(() => {
-
-        status.innerText = "Video detected";
-
-        options.innerHTML = `
-          <div class="option">
-            Video downloader backend will be connected here.
-          </div>
-        `;
-
-      }, 1000);
+    if (!url) {
+      error.innerText = "Video URL paste karo.";
+      return;
     }
 
-  </script>
+    if (!url.startsWith("http://") &&
+        !url.startsWith("https://")) {
+      error.innerText = "Valid URL paste karo.";
+      return;
+    }
+
+    player.src = url;
+
+    download.href = url;
+
+    videoBox.style.display = "block";
+
+    player.load();
+
+    player.play().catch(() => {
+      // Browser autoplay ko block kar sakta hai.
+      // User Play button daba sakta hai.
+    });
+  }
+
+</script>
 
 </body>
 </html>
