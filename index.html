@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Downloader</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1115;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 25px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #9ca3af;
+      margin-top: 8px;
+      margin-bottom: 30px;
+    }
+
+    .box {
+      background: #191c23;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      outline: none;
+      border-radius: 12px;
+      background: #252a33;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #2ea6ff;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #result {
+      display: none;
+      margin-top: 18px;
+      background: #191c23;
+      padding: 18px;
+      border-radius: 15px;
+    }
+
+    .status {
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .option {
+      background: #252a33;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">Sky Downloader</div>
+
+    <div class="subtitle">
+      Download videos easily
+    </div>
+
+    <div class="box">
+
+      <input
+        id="url"
+        type="url"
+        placeholder="Paste video URL here..."
+      >
+
+      <button onclick="processVideo()">
+        Download
+      </button>
+
+    </div>
+
+    <div id="result">
+
+      <div class="status" id="status">
+        Processing...
+      </div>
+
+      <div id="options"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const tg = window.Telegram.WebApp;
+
+    tg.ready();
+    tg.expand();
+
+    function processVideo() {
+
+      const url = document.getElementById("url").value.trim();
+
+      if (!url) {
+        tg.showAlert("Please paste a video URL first.");
+        return;
+      }
+
+      const result = document.getElementById("result");
+      const status = document.getElementById("status");
+      const options = document.getElementById("options");
+
+      result.style.display = "block";
+
+      status.innerText = "Checking video...";
+
+      options.innerHTML = "";
+
+      setTimeout(() => {
+
+        status.innerText = "Video detected";
+
+        options.innerHTML = `
+          <div class="option">
+            Video downloader backend will be connected here.
+          </div>
+        `;
+
+      }, 1000);
+    }
+
+  </script>
+
+</body>
+</html>
