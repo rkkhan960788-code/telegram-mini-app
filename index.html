@@ -2,144 +2,1316 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>Android Tools</title>
+<title>rizwanx93070://CONTROL</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:#010604;
+    color:#00ff88;
+    font-family:'Share Tech Mono',monospace;
+    overflow-x:hidden;
+}
+
+/* MATRIX */
+#matrix{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    opacity:.28;
+    pointer-events:none;
+}
+
+/* GRID */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+
+    background:
+    linear-gradient(rgba(0,255,120,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,120,.055) 1px,transparent 1px);
+
+    background-size:32px 32px;
+    animation:gridMove 7s linear infinite;
+}
+
+@keyframes gridMove{
+    from{
+        background-position:0 0,0 0;
+    }
+    to{
+        background-position:0 32px,32px 0;
+    }
+}
+
+/* SCANLINES */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:10;
+    pointer-events:none;
+
+    background:
+    repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.025) 0,
+        rgba(255,255,255,.025) 1px,
+        transparent 2px,
+        transparent 5px
+    );
+
+    opacity:.35;
+}
+
+/* APP */
+.app{
+    position:relative;
+    z-index:3;
+    width:100%;
+    max-width:650px;
+    margin:auto;
+    padding:18px 14px 35px;
+}
+
+/* TOP TERMINAL */
+.terminal-top{
+    position:relative;
+    padding:14px 15px;
+    margin-bottom:14px;
+
+    background:rgba(0,12,7,.9);
+    border:1px solid #00ff88;
+
+    box-shadow:
+    0 0 14px rgba(0,255,120,.2),
+    inset 0 0 25px rgba(0,255,120,.04);
+
+    overflow:hidden;
+}
+
+.terminal-top::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:2px;
+    background:#00ff88;
+    box-shadow:0 0 12px #00ff88;
+
+    animation:scanTop 2.5s linear infinite;
+}
+
+@keyframes scanTop{
+    0%{transform:translateX(-100%)}
+    100%{transform:translateX(100%)}
+}
+
+/* TOP LINE */
+.top-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:11px;
+    color:#00aa66;
+
+    margin-bottom:8px;
+}
+
+.top-left{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+
+    background:#00ff88;
+    box-shadow:0 0 10px #00ff88;
+
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:.2}
+}
+
+/* =========================
+   INSTAGRAM NEON HEADER
+========================= */
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* NEON INSTAGRAM CAMERA */
+.instagram-icon{
+    position:relative;
+
+    width:42px;
+    height:42px;
+    min-width:42px;
+
+    border:3px solid #00ff88;
+    border-radius:12px;
+
+    box-shadow:
+        0 0 5px #00ff88,
+        0 0 13px #00ff88,
+        inset 0 0 8px rgba(0,255,136,.35);
+
+    animation:
+        instaPulse 2s infinite,
+        instaGlitch 4s infinite;
+}
+
+/* CAMERA LENS */
+.instagram-icon::before{
+    content:"";
+
+    position:absolute;
+
+    width:14px;
+    height:14px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:3px solid #00ff88;
+    border-radius:50%;
+
+    box-shadow:
+        0 0 7px #00ff88,
+        inset 0 0 6px rgba(0,255,136,.5);
+}
+
+/* CAMERA DOT */
+.instagram-icon::after{
+    content:"";
+
+    position:absolute;
+
+    width:5px;
+    height:5px;
+
+    right:6px;
+    top:6px;
+
+    border-radius:50%;
+
+    background:#00ff88;
+
+    box-shadow:0 0 8px #00ff88;
+}
+
+@keyframes instaPulse{
+    0%,100%{
+        transform:scale(1);
+        filter:brightness(1);
     }
 
-    body {
-        background: #f5f5f5;
-        padding: 25px 15px;
-        color: #222;
+    50%{
+        transform:scale(1.06);
+        filter:brightness(1.45);
+    }
+}
+
+@keyframes instaGlitch{
+    0%,90%,100%{
+        transform:translate(0);
     }
 
-    .container {
-        max-width: 500px;
-        margin: auto;
+    92%{
+        transform:translate(2px,-1px);
     }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 8px;
+    94%{
+        transform:translate(-2px,1px);
     }
 
-    .subtitle {
-        text-align: center;
-        color: #777;
-        margin-bottom: 25px;
+    96%{
+        transform:translate(0);
+    }
+}
+
+/* BRAND TEXT */
+.title{
+    position:relative;
+
+    font-size:27px;
+    font-weight:900;
+
+    letter-spacing:3px;
+
+    color:#00ff88;
+
+    text-shadow:
+        0 0 5px #00ff88,
+        0 0 12px rgba(0,255,120,.7),
+        0 0 25px rgba(0,255,120,.3);
+
+    animation:titleGlitch 3s infinite;
+}
+
+@keyframes titleGlitch{
+    0%,90%,100%{
+        transform:none;
     }
 
-    .card {
-        background: white;
-        padding: 18px;
-        margin-bottom: 15px;
-        border-radius: 14px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    92%{
+        transform:translateX(2px);
     }
 
-    .card h2 {
-        font-size: 18px;
-        margin-bottom: 12px;
+    94%{
+        transform:translateX(-2px);
     }
 
-    button {
-        width: 100%;
-        padding: 14px;
-        margin-top: 9px;
-        border: none;
-        border-radius: 10px;
-        background: #222;
-        color: white;
-        font-size: 15px;
-        cursor: pointer;
+    96%{
+        transform:none;
+    }
+}
+
+.subtitle{
+    color:#008f5a;
+    font-size:9px;
+    letter-spacing:2px;
+    margin-top:4px;
+}
+
+/* STATUS */
+.status{
+    margin-top:13px;
+    padding-top:10px;
+
+    border-top:1px dashed rgba(0,255,136,.35);
+
+    font-size:11px;
+    color:#00aa66;
+}
+
+.status span{
+    color:#00ff88;
+    text-shadow:0 0 8px #00ff88;
+
+    transition:opacity .18s;
+}
+
+/* SECTIONS */
+.section{
+    margin-top:18px;
+}
+
+.section-head{
+    display:flex;
+    justify-content:space-between;
+
+    margin-bottom:7px;
+    padding:0 4px;
+
+    color:#00ff88;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+.section-head .right{
+    color:#005f3b;
+    font-size:9px;
+}
+
+/* CARDS */
+.card{
+    position:relative;
+    overflow:hidden;
+
+    margin-bottom:7px;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,136,.055),
+        rgba(0,0,0,.65)
+    );
+
+    border:1px solid rgba(0,255,136,.3);
+
+    box-shadow:
+    inset 0 0 18px rgba(0,255,136,.025);
+
+    transition:
+    transform .15s ease,
+    border-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.card::before{
+    content:"";
+
+    position:absolute;
+    top:0;
+    left:-100%;
+
+    width:100%;
+    height:1px;
+
+    background:#00ff88;
+    box-shadow:0 0 8px #00ff88;
+
+    transition:left .45s ease;
+}
+
+.card:hover::before,
+.card:active::before{
+    left:0;
+}
+
+.card:active{
+    transform:scale(.985);
+
+    border-color:#00ff88;
+
+    box-shadow:
+    0 0 16px rgba(0,255,136,.2),
+    inset 0 0 15px rgba(0,255,136,.04);
+}
+
+/* SETTING */
+.setting{
+    min-height:58px;
+
+    display:flex;
+    align-items:center;
+
+    padding:10px 12px;
+
+    cursor:pointer;
+}
+
+.symbol{
+    width:38px;
+    min-width:38px;
+    height:38px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:12px;
+
+    color:#00ff88;
+
+    border:1px solid rgba(0,255,136,.45);
+
+    background:#00150c;
+
+    font-size:12px;
+    font-weight:bold;
+
+    text-shadow:0 0 8px #00ff88;
+
+    box-shadow:
+    inset 0 0 10px rgba(0,255,136,.05);
+}
+
+.s1::before{content:"01"}
+.s2::before{content:"02"}
+.s3::before{content:"03"}
+.s4::before{content:"04"}
+.s5::before{content:"05"}
+.s6::before{content:"06"}
+.s7::before{content:"07"}
+.s8::before{content:"08"}
+.s9::before{content:"09"}
+.s10::before{content:"0A"}
+.s11::before{content:"0B"}
+
+.info{
+    flex:1;
+    min-width:0;
+}
+
+.name{
+    color:#00ff88;
+
+    font-size:14px;
+    letter-spacing:.7px;
+
+    text-shadow:
+    0 0 5px rgba(0,255,136,.5);
+}
+
+.name::before{
+    content:"[+] ";
+    color:#008f5a;
+}
+
+.desc{
+    margin-top:3px;
+
+    color:#006b46;
+
+    font-size:9px;
+    letter-spacing:.3px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.arrow{
+    color:#00ff88;
+
+    font-size:17px;
+    margin-left:8px;
+
+    text-shadow:0 0 7px #00ff88;
+
+    animation:arrowPulse 1.5s infinite;
+}
+
+@keyframes arrowPulse{
+    50%{
+        transform:translateX(3px);
+        opacity:.45;
+    }
+}
+
+/* MAIN BUTTON */
+.main-access{
+    position:relative;
+    overflow:hidden;
+
+    margin-top:20px;
+    padding:17px 14px;
+
+    text-align:center;
+
+    border:1px solid #00ff88;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,136,.08),
+        rgba(0,40,22,.8),
+        rgba(0,255,136,.08)
+    );
+
+    color:#00ff88;
+
+    font-size:15px;
+    letter-spacing:2px;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 0 12px rgba(0,255,136,.25),
+    inset 0 0 20px rgba(0,255,136,.05);
+
+    text-shadow:0 0 6px #00ff88;
+
+    animation:accessPulse 2s infinite;
+}
+
+@keyframes accessPulse{
+    0%,100%{
+        box-shadow:
+        0 0 10px rgba(0,255,136,.2),
+        inset 0 0 20px rgba(0,255,136,.03);
     }
 
-    button:active {
-        transform: scale(0.98);
+    50%{
+        box-shadow:
+        0 0 24px rgba(0,255,136,.4),
+        inset 0 0 25px rgba(0,255,136,.07);
+    }
+}
+
+.main-access::before{
+    content:"";
+
+    position:absolute;
+    top:0;
+    left:-120%;
+
+    width:70%;
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        transparent,
+        rgba(0,255,136,.2),
+        transparent
+    );
+
+    transform:skewX(-20deg);
+
+    animation:buttonSweep 2.7s infinite;
+}
+
+@keyframes buttonSweep{
+    0%{left:-120%}
+    45%,100%{left:150%}
+}
+
+.main-access:active{
+    transform:scale(.97);
+    background:#00351d;
+}
+
+/* CONSOLE */
+.console{
+    margin-top:16px;
+    padding:11px;
+
+    border-left:2px solid #00ff88;
+
+    background:rgba(0,20,11,.65);
+
+    color:#007d50;
+
+    font-size:9px;
+    line-height:1.7;
+}
+
+.console .green{
+    color:#00ff88;
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+
+    margin-top:13px;
+
+    color:#004d32;
+
+    font-size:8px;
+    letter-spacing:1px;
+}
+
+/* RIPPLE */
+.ripple{
+    position:absolute;
+
+    width:5px;
+    height:5px;
+
+    border-radius:50%;
+
+    pointer-events:none;
+
+    background:#00ff88;
+
+    box-shadow:
+    0 0 8px #00ff88,
+    0 0 18px #00ff88;
+
+    transform:scale(1);
+    opacity:.8;
+
+    animation:ripple .65s ease-out forwards;
+}
+
+@keyframes ripple{
+    to{
+        transform:scale(35);
+        opacity:0;
+    }
+}
+
+@media(max-width:400px){
+
+    .app{
+        padding-left:10px;
+        padding-right:10px;
     }
 
-    .note {
-        margin-top: 20px;
-        padding: 12px;
-        background: #fff3cd;
-        border-radius: 10px;
-        font-size: 13px;
-        color: #664d03;
+    .instagram-icon{
+        width:39px;
+        height:39px;
+        min-width:39px;
     }
+
+    .title{
+        font-size:23px;
+        letter-spacing:2px;
+    }
+
+    .name{
+        font-size:13px;
+    }
+
+    .symbol{
+        width:35px;
+        min-width:35px;
+        height:35px;
+        margin-right:10px;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<canvas id="matrix"></canvas>
 
-    <h1>Android Tools</h1>
-    <p class="subtitle">Open Android system settings</p>
+<div class="app">
 
-    <div class="card">
-        <h2>System</h2>
+    <div class="terminal-top">
 
-        <button onclick="openIntent('android.settings.SETTINGS')">
-            Open Settings
-        </button>
+        <div class="top-line">
 
-        <button onclick="openIntent('android.settings.WIFI_SETTINGS')">
-            Wi-Fi Settings
-        </button>
+            <div class="top-left">
+                <span class="dot"></span>
+                <span>LOCAL_NODE</span>
+            </div>
 
-        <button onclick="openIntent('android.settings.BLUETOOTH_SETTINGS')">
-            Bluetooth Settings
-        </button>
+            <span id="clock">00:00:00</span>
 
-        <button onclick="openIntent('android.settings.DISPLAY_SETTINGS')">
-            Display Settings
-        </button>
+        </div>
 
-        <button onclick="openIntent('android.settings.SOUND_SETTINGS')">
-            Sound Settings
-        </button>
+
+        <div class="brand">
+
+            <div class="instagram-icon"></div>
+
+            <div>
+                <div class="title">rizwanx93070</div>
+
+                <div class="subtitle">
+                    CYBER DEVICE CONTROL TERMINAL
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="status">
+
+            SYSTEM STATUS :
+            <span id="statusText">ACCESS_GRANTED</span>
+
+        </div>
+
     </div>
 
-    <div class="card">
-        <h2>Device</h2>
 
-        <button onclick="openIntent('android.settings.DATE_SETTINGS')">
-            Date & Time
-        </button>
+    <!-- CONNECTIONS -->
 
-        <button onclick="openIntent('android.settings.LOCATION_SOURCE_SETTINGS')">
-            Location Settings
-        </button>
+    <div class="section">
 
-        <button onclick="openIntent('android.settings.BATTERY_SAVER_SETTINGS')">
-            Battery Settings
-        </button>
+        <div class="section-head">
+            <span>// CONNECTION_MATRIX</span>
+            <span class="right">[01]</span>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.WIFI_SETTINGS')">
+
+                <div class="symbol s1"></div>
+
+                <div class="info">
+                    <div class="name">Wi-Fi</div>
+                    <div class="desc">
+                        WIRELESS NETWORK INTERFACE
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.WIRELESS_SETTINGS')">
+
+                <div class="symbol s2"></div>
+
+                <div class="info">
+                    <div class="name">Mobile network</div>
+                    <div class="desc">
+                        CELLULAR DATA CONFIGURATION
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.BLUETOOTH_SETTINGS')">
+
+                <div class="symbol s3"></div>
+
+                <div class="info">
+                    <div class="name">Bluetooth</div>
+                    <div class="desc">
+                        SHORT RANGE DEVICE LINK
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.WIRELESS_SETTINGS')">
+
+                <div class="symbol s4"></div>
+
+                <div class="info">
+                    <div class="name">Connection &amp; sharing</div>
+                    <div class="desc">
+                        NETWORK / SHARING PROTOCOLS
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
     </div>
 
-    <div class="note">
-        Note: Chrome aur Android version ke according kuch intents
-        block ya unsupported ho sakte hain.
+
+    <!-- VISUAL -->
+
+    <div class="section">
+
+        <div class="section-head">
+            <span>// VISUAL_MATRIX</span>
+            <span class="right">[02]</span>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.DISPLAY_SETTINGS')">
+
+                <div class="symbol s5"></div>
+
+                <div class="info">
+                    <div class="name">
+                        Display &amp; brightness
+                    </div>
+
+                    <div class="desc">
+                        SCREEN OUTPUT PARAMETERS
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- DEVICE -->
+
+    <div class="section">
+
+        <div class="section-head">
+            <span>// DEVICE_CORE</span>
+            <span class="right">[03]</span>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.APPLICATION_SETTINGS')">
+
+                <div class="symbol s6"></div>
+
+                <div class="info">
+                    <div class="name">Apps</div>
+
+                    <div class="desc">
+                        APPLICATION PROCESS CONTROL
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.SECURITY_SETTINGS')">
+
+                <div class="symbol s7"></div>
+
+                <div class="info">
+                    <div class="name">
+                        Security &amp; privacy
+                    </div>
+
+                    <div class="desc">
+                        SYSTEM SECURITY PARAMETERS
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.LOCATION_SOURCE_SETTINGS')">
+
+                <div class="symbol s8"></div>
+
+                <div class="info">
+                    <div class="name">Location</div>
+
+                    <div class="desc">
+                        LOCATION SERVICE CONTROL
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.BATTERY_SETTINGS')">
+
+                <div class="symbol s9"></div>
+
+                <div class="info">
+                    <div class="name">Battery</div>
+
+                    <div class="desc">
+                        POWER / ENERGY MANAGEMENT
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- SYSTEM -->
+
+    <div class="section">
+
+        <div class="section-head">
+            <span>// SYSTEM_KERNEL</span>
+            <span class="right">[04]</span>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.DEVICE_INFO_SETTINGS')">
+
+                <div class="symbol s10"></div>
+
+                <div class="info">
+                    <div class="name">About device</div>
+
+                    <div class="desc">
+                        DEVICE INFORMATION / BUILD DATA
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="setting"
+            onclick="launch(this,'android.settings.SYNC_SETTINGS')">
+
+                <div class="symbol s11"></div>
+
+                <div class="info">
+                    <div class="name">
+                        Users &amp; accounts
+                    </div>
+
+                    <div class="desc">
+                        ACCOUNT / USER SYNCHRONIZATION
+                    </div>
+                </div>
+
+                <div class="arrow">›</div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- MAIN SETTINGS -->
+
+    <div class="main-access"
+    onclick="openMain(this)">
+
+        [ ⚙ ] OPEN_MAIN_SETTINGS
+
+    </div>
+
+
+    <!-- TERMINAL -->
+
+    <div class="console">
+
+        <div>
+            <span class="green">root@android</span>:~$ ./system_control
+        </div>
+
+        <div>
+            &gt; initializing interface...
+        </div>
+
+        <div>
+            &gt; loading system modules...
+        </div>
+
+        <div>
+            &gt; checking local node...
+        </div>
+
+        <div>
+            &gt; <span class="green">READY_</span><span id="cursor">█</span>
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        rizwanx93070://CONTROL • LOCAL ANDROID SYSTEM INTERFACE
     </div>
 
 </div>
 
-<script>
-function openIntent(action) {
 
-    const intent =
+<script>
+
+/* =========================
+   MATRIX
+========================= */
+
+const canvas =
+document.getElementById("matrix");
+
+const ctx =
+canvas.getContext("2d");
+
+let width;
+let height;
+let columns;
+let drops;
+
+function resizeMatrix(){
+
+    width =
+    canvas.width =
+    window.innerWidth;
+
+    height =
+    canvas.height =
+    window.innerHeight;
+
+    const fontSize = 13;
+
+    columns =
+    Math.floor(width / fontSize);
+
+    drops = [];
+
+    for(let i=0;i<columns;i++){
+
+        drops[i] =
+        Math.random() * -80;
+
+    }
+}
+
+resizeMatrix();
+
+window.addEventListener(
+    "resize",
+    resizeMatrix
+);
+
+const chars =
+"01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@<>[]{}";
+
+function drawMatrix(){
+
+    ctx.fillStyle =
+    "rgba(0,0,0,.075)";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    ctx.font =
+    "13px monospace";
+
+    for(let i=0;i<drops.length;i++){
+
+        const text =
+        chars[
+            Math.floor(
+                Math.random()*chars.length
+            )
+        ];
+
+        const x = i * 13;
+        const y = drops[i] * 13;
+
+        ctx.fillStyle =
+        Math.random() > .96
+        ? "#baffd8"
+        : "#00a85a";
+
+        ctx.fillText(
+            text,
+            x,
+            y
+        );
+
+        if(
+            y > height &&
+            Math.random() > .975
+        ){
+            drops[i] = 0;
+        }
+
+        drops[i] += .65;
+    }
+}
+
+setInterval(
+    drawMatrix,
+    40
+);
+
+
+/* =========================
+   CLOCK
+========================= */
+
+function updateClock(){
+
+    const now =
+    new Date();
+
+    const h =
+    String(now.getHours())
+    .padStart(2,"0");
+
+    const m =
+    String(now.getMinutes())
+    .padStart(2,"0");
+
+    const s =
+    String(now.getSeconds())
+    .padStart(2,"0");
+
+    document.getElementById(
+        "clock"
+    ).textContent =
+    h + ":" + m + ":" + s;
+}
+
+setInterval(
+    updateClock,
+    1000
+);
+
+updateClock();
+
+
+/* =========================
+   STATUS
+========================= */
+
+const statuses = [
+    "ACCESS_GRANTED",
+    "NODE_ONLINE",
+    "SYSTEM_READY",
+    "LINK_ACTIVE",
+    "DEVICE_DETECTED",
+    "CONTROL_READY",
+    "SECURE_CHANNEL"
+];
+
+let statusIndex = 0;
+
+setInterval(()=>{
+
+    statusIndex =
+    (statusIndex + 1) %
+    statuses.length;
+
+    const el =
+    document.getElementById(
+        "statusText"
+    );
+
+    el.style.opacity = "0";
+
+    setTimeout(()=>{
+
+        el.textContent =
+        statuses[statusIndex];
+
+        el.style.opacity = "1";
+
+    },180);
+
+},1800);
+
+
+/* =========================
+   CURSOR
+========================= */
+
+setInterval(()=>{
+
+    const cursor =
+    document.getElementById(
+        "cursor"
+    );
+
+    cursor.style.opacity =
+    cursor.style.opacity === "0"
+    ? "1"
+    : "0";
+
+},500);
+
+
+/* =========================
+   RIPPLE
+========================= */
+
+function createRipple(element){
+
+    const ripple =
+    document.createElement("span");
+
+    ripple.className =
+    "ripple";
+
+    const rect =
+    element.getBoundingClientRect();
+
+    ripple.style.left =
+    (rect.width / 2) + "px";
+
+    ripple.style.top =
+    (rect.height / 2) + "px";
+
+    element.appendChild(
+        ripple
+    );
+
+    setTimeout(()=>{
+        ripple.remove();
+    },700);
+}
+
+
+/* =========================
+   ANDROID SETTINGS
+========================= */
+
+function launch(
+    element,
+    action
+){
+
+    createRipple(element);
+
+    setTimeout(()=>{
+
+        window.location.href =
         "intent:#Intent;" +
-        "action=" + action + ";" +
+        "action=" +
+        action +
+        ";" +
         "end";
 
-    window.location.href = intent;
+    },180);
 }
+
+
+/* =========================
+   MAIN SETTINGS
+========================= */
+
+function openMain(element){
+
+    createRipple(element);
+
+    setTimeout(()=>{
+
+        window.location.href =
+        "intent://com.android.settings/" +
+        "#Intent;" +
+        "scheme=android-app;" +
+        "end";
+
+    },180);
+}
+
 </script>
 
 </body>
