@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>rizwanx93070://CONTROL</title>
 
@@ -25,7 +24,14 @@ html,body{
     overflow-x:hidden;
 }
 
-/* MATRIX */
+button,input{
+    font-family:inherit;
+}
+
+button{
+    -webkit-tap-highlight-color:transparent;
+}
+
 #matrix{
     position:fixed;
     inset:0;
@@ -36,7 +42,6 @@ html,body{
     pointer-events:none;
 }
 
-/* GRID */
 body::before{
     content:"";
     position:fixed;
@@ -49,6 +54,7 @@ body::before{
     linear-gradient(90deg,rgba(0,255,120,.055) 1px,transparent 1px);
 
     background-size:32px 32px;
+
     animation:gridMove 7s linear infinite;
 }
 
@@ -56,12 +62,12 @@ body::before{
     from{
         background-position:0 0,0 0;
     }
+
     to{
         background-position:0 32px,32px 0;
     }
 }
 
-/* SCANLINES */
 body::after{
     content:"";
     position:fixed;
@@ -81,115 +87,161 @@ body::after{
     opacity:.35;
 }
 
-/* APP */
-.app{
-    position:relative;
-    z-index:3;
-    width:100%;
-    max-width:650px;
-    margin:auto;
-    padding:18px 14px 35px;
+
+/* =========================
+   AUTH
+========================= */
+
+.auth-screen{
+    position:fixed;
+    inset:0;
+    z-index:30;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:18px;
+
+    background:rgba(0,4,2,.78);
+
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+
+    transition:.45s ease;
 }
 
-/* TOP TERMINAL */
-.terminal-top{
-    position:relative;
-    padding:14px 15px;
-    margin-bottom:14px;
+.auth-screen.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:scale(1.04);
+}
 
-    background:rgba(0,12,7,.9);
+.auth-box{
+    width:100%;
+    max-width:430px;
+
+    position:relative;
+    overflow:hidden;
+
+    padding:24px 18px 20px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(0,28,15,.97),
+        rgba(0,7,4,.99)
+    );
+
     border:1px solid #00ff88;
 
     box-shadow:
-    0 0 14px rgba(0,255,120,.2),
-    inset 0 0 25px rgba(0,255,120,.04);
+    0 0 20px rgba(0,255,136,.22),
+    0 0 80px rgba(0,255,136,.06),
+    inset 0 0 35px rgba(0,255,136,.04);
 
-    overflow:hidden;
+    animation:authEnter .7s ease;
 }
 
-.terminal-top::before{
+@keyframes authEnter{
+    from{
+        opacity:0;
+        transform:translateY(25px) scale(.97);
+    }
+
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.auth-box::before{
     content:"";
+
     position:absolute;
-    left:0;
     top:0;
-    width:100%;
+    left:-100%;
+
+    width:70%;
     height:2px;
+
     background:#00ff88;
     box-shadow:0 0 12px #00ff88;
 
-    animation:scanTop 2.5s linear infinite;
+    animation:authScan 2.2s linear infinite;
 }
 
-@keyframes scanTop{
-    0%{transform:translateX(-100%)}
-    100%{transform:translateX(100%)}
+@keyframes authScan{
+    0%{
+        left:-100%;
+    }
+
+    100%{
+        left:150%;
+    }
 }
 
-/* TOP LINE */
-.top-line{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    font-size:11px;
-    color:#00aa66;
-
-    margin-bottom:8px;
+.auth-corner{
+    position:absolute;
+    width:20px;
+    height:20px;
+    border-color:#00ff88;
 }
 
-.top-left{
-    display:flex;
-    gap:8px;
-    align-items:center;
+.auth-corner.tl{
+    left:-1px;
+    top:-1px;
+    border-left:2px solid;
+    border-top:2px solid;
 }
 
-.dot{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-
-    background:#00ff88;
-    box-shadow:0 0 10px #00ff88;
-
-    animation:blink 1s infinite;
+.auth-corner.tr{
+    right:-1px;
+    top:-1px;
+    border-right:2px solid;
+    border-top:2px solid;
 }
 
-@keyframes blink{
-    50%{opacity:.2}
+.auth-corner.bl{
+    left:-1px;
+    bottom:-1px;
+    border-left:2px solid;
+    border-bottom:2px solid;
 }
 
-/* =========================
-   INSTAGRAM NEON HEADER
-========================= */
+.auth-corner.br{
+    right:-1px;
+    bottom:-1px;
+    border-right:2px solid;
+    border-bottom:2px solid;
+}
 
-.brand{
+.auth-brand{
     display:flex;
     align-items:center;
     gap:12px;
+    margin-bottom:20px;
 }
 
-/* NEON INSTAGRAM CAMERA */
 .instagram-icon{
     position:relative;
 
-    width:42px;
-    height:42px;
-    min-width:42px;
+    width:45px;
+    height:45px;
+    min-width:45px;
 
     border:3px solid #00ff88;
-    border-radius:12px;
+    border-radius:13px;
 
     box-shadow:
-        0 0 5px #00ff88,
-        0 0 13px #00ff88,
-        inset 0 0 8px rgba(0,255,136,.35);
+    0 0 5px #00ff88,
+    0 0 14px #00ff88,
+    inset 0 0 8px rgba(0,255,136,.35);
 
-    animation:
-        instaPulse 2s infinite,
-        instaGlitch 4s infinite;
+    animation:instaPulse 2s infinite;
 }
 
-/* CAMERA LENS */
 .instagram-icon::before{
     content:"";
 
@@ -206,12 +258,9 @@ body::after{
     border:3px solid #00ff88;
     border-radius:50%;
 
-    box-shadow:
-        0 0 7px #00ff88,
-        inset 0 0 6px rgba(0,255,136,.5);
+    box-shadow:0 0 7px #00ff88;
 }
 
-/* CAMERA DOT */
 .instagram-icon::after{
     content:"";
 
@@ -238,32 +287,285 @@ body::after{
 
     50%{
         transform:scale(1.06);
-        filter:brightness(1.45);
+        filter:brightness(1.4);
     }
 }
 
-@keyframes instaGlitch{
-    0%,90%,100%{
-        transform:translate(0);
-    }
+.auth-title{
+    font-size:24px;
+    letter-spacing:2px;
 
-    92%{
-        transform:translate(2px,-1px);
-    }
-
-    94%{
-        transform:translate(-2px,1px);
-    }
-
-    96%{
-        transform:translate(0);
-    }
+    text-shadow:
+    0 0 5px #00ff88,
+    0 0 15px rgba(0,255,120,.7);
 }
 
-/* BRAND TEXT */
-.title{
+.auth-subtitle{
+    color:#007d50;
+    font-size:8px;
+    letter-spacing:1.5px;
+    margin-top:4px;
+}
+
+.auth-mode{
+    display:flex;
+    margin-bottom:18px;
+
+    border:1px solid rgba(0,255,136,.28);
+}
+
+.auth-tab{
+    flex:1;
+
+    padding:11px 5px;
+
+    background:transparent;
+    color:#006b46;
+
+    border:0;
+
+    font-size:11px;
+    cursor:pointer;
+}
+
+.auth-tab.active{
+    color:#00ff88;
+    background:rgba(0,255,136,.08);
+
+    box-shadow:
+    inset 0 -2px #00ff88;
+
+    text-shadow:0 0 8px #00ff88;
+}
+
+.input-group{
+    margin-bottom:12px;
+}
+
+.input-label{
+    display:block;
+
+    color:#008f5a;
+
+    font-size:9px;
+    letter-spacing:1px;
+
+    margin-bottom:5px;
+}
+
+.auth-input{
+    width:100%;
+
+    padding:13px 12px;
+
+    outline:none;
+
+    background:#000d08;
+
+    border:1px solid rgba(0,255,136,.3);
+
+    color:#00ff88;
+
+    font-size:12px;
+
+    box-shadow:
+    inset 0 0 12px rgba(0,255,136,.025);
+}
+
+.auth-input:focus{
+    border-color:#00ff88;
+
+    box-shadow:
+    0 0 10px rgba(0,255,136,.13),
+    inset 0 0 12px rgba(0,255,136,.04);
+}
+
+.auth-input::placeholder{
+    color:#004d32;
+}
+
+.auth-message{
+    min-height:18px;
+
+    margin:8px 0;
+
+    text-align:center;
+
+    font-size:9px;
+
+    color:#00ff88;
+}
+
+.auth-message.error{
+    color:#ff526f;
+
+    text-shadow:
+    0 0 7px rgba(255,82,111,.5);
+}
+
+.auth-button{
+    width:100%;
+
+    padding:14px;
+
+    margin-top:4px;
+
+    border:1px solid #00ff88;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,136,.08),
+        rgba(0,55,30,.9),
+        rgba(0,255,136,.08)
+    );
+
+    color:#00ff88;
+
+    font-size:13px;
+    letter-spacing:2px;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 0 15px rgba(0,255,136,.2),
+    inset 0 0 15px rgba(0,255,136,.04);
+}
+
+.auth-button:active{
+    transform:scale(.97);
+    background:#00351d;
+}
+
+.demo-note{
+    margin-top:13px;
+
+    text-align:center;
+
+    color:#004d32;
+
+    font-size:8px;
+
+    line-height:1.5;
+}
+
+
+/* =========================
+   APP
+========================= */
+
+.app{
+    position:relative;
+    z-index:3;
+
+    width:100%;
+    max-width:650px;
+
+    margin:auto;
+
+    padding:18px 14px 35px;
+}
+
+.hidden-page{
+    display:none !important;
+}
+
+
+/* =========================
+   TOP
+========================= */
+
+.terminal-top{
     position:relative;
 
+    padding:14px 15px;
+
+    margin-bottom:14px;
+
+    background:rgba(0,12,7,.9);
+
+    border:1px solid #00ff88;
+
+    box-shadow:
+    0 0 14px rgba(0,255,120,.2),
+    inset 0 0 25px rgba(0,255,120,.04);
+
+    overflow:hidden;
+}
+
+.terminal-top::before{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:2px;
+
+    background:#00ff88;
+
+    box-shadow:0 0 12px #00ff88;
+
+    animation:scanTop 2.5s linear infinite;
+}
+
+@keyframes scanTop{
+    0%{
+        transform:translateX(-100%);
+    }
+
+    100%{
+        transform:translateX(100%);
+    }
+}
+
+.top-line{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:11px;
+
+    color:#00aa66;
+
+    margin-bottom:8px;
+}
+
+.top-left{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#00ff88;
+
+    box-shadow:0 0 10px #00ff88;
+
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:.2;
+    }
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.title{
     font-size:27px;
     font-weight:900;
 
@@ -272,9 +574,9 @@ body::after{
     color:#00ff88;
 
     text-shadow:
-        0 0 5px #00ff88,
-        0 0 12px rgba(0,255,120,.7),
-        0 0 25px rgba(0,255,120,.3);
+    0 0 5px #00ff88,
+    0 0 12px rgba(0,255,120,.7),
+    0 0 25px rgba(0,255,120,.3);
 
     animation:titleGlitch 3s infinite;
 }
@@ -304,38 +606,263 @@ body::after{
     margin-top:4px;
 }
 
-/* STATUS */
 .status{
     margin-top:13px;
+
     padding-top:10px;
 
     border-top:1px dashed rgba(0,255,136,.35);
 
     font-size:11px;
+
     color:#00aa66;
 }
 
 .status span{
     color:#00ff88;
+
     text-shadow:0 0 8px #00ff88;
 
     transition:opacity .18s;
 }
 
-/* SECTIONS */
+
+/* =========================
+   USER BAR
+========================= */
+
+.user-bar{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:8px;
+
+    margin-bottom:15px;
+}
+
+.user-info{
+    flex:1;
+    min-width:0;
+
+    padding:10px 12px;
+
+    border:1px solid rgba(0,255,136,.28);
+
+    background:rgba(0,16,9,.7);
+}
+
+.user-label{
+    color:#006b46;
+    font-size:8px;
+}
+
+.user-name{
+    margin-top:3px;
+
+    color:#00ff88;
+
+    font-size:12px;
+
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.logout-btn{
+    padding:10px 12px;
+
+    border:1px solid rgba(0,255,136,.4);
+
+    background:#00150c;
+
+    color:#00ff88;
+
+    font-size:9px;
+
+    cursor:pointer;
+}
+
+
+/* =========================
+   WALLET
+========================= */
+
+.wallet-card{
+    position:relative;
+    overflow:hidden;
+
+    padding:15px;
+
+    margin-bottom:10px;
+
+    border:1px solid #00ff88;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(0,255,136,.10),
+        rgba(0,15,8,.95)
+    );
+
+    box-shadow:
+    0 0 18px rgba(0,255,136,.13),
+    inset 0 0 22px rgba(0,255,136,.035);
+}
+
+.wallet-card::after{
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    right:-40%;
+
+    width:50%;
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        transparent,
+        rgba(0,255,136,.07),
+        transparent
+    );
+
+    transform:skewX(-20deg);
+
+    animation:walletSweep 4s infinite;
+}
+
+@keyframes walletSweep{
+    0%,55%{
+        right:-50%;
+    }
+
+    100%{
+        right:130%;
+    }
+}
+
+.wallet-head{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+}
+
+.wallet-label{
+    color:#008f5a;
+
+    font-size:9px;
+    letter-spacing:2px;
+}
+
+.wallet-icon{
+    color:#00ff88;
+
+    font-size:18px;
+
+    text-shadow:0 0 9px #00ff88;
+}
+
+.wallet-balance{
+    margin-top:5px;
+
+    color:#00ff88;
+
+    font-size:27px;
+
+    text-shadow:
+    0 0 7px #00ff88,
+    0 0 20px rgba(0,255,136,.45);
+}
+
+.wallet-sub{
+    color:#006b46;
+
+    font-size:8px;
+
+    margin-top:3px;
+}
+
+.wallet-actions{
+    display:flex;
+
+    gap:7px;
+
+    margin-top:13px;
+}
+
+.wallet-action{
+    flex:1;
+
+    padding:10px 5px;
+
+    border:1px solid rgba(0,255,136,.35);
+
+    background:#00150c;
+
+    color:#00ff88;
+
+    font-size:9px;
+
+    cursor:pointer;
+}
+
+.wallet-action:active{
+    background:#00351d;
+}
+
+
+/* =========================
+   BALANCE INFO
+========================= */
+
+.credit-info{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:8px;
+
+    padding:9px 10px;
+
+    border-left:2px solid #00ff88;
+
+    background:rgba(0,255,136,.035);
+
+    font-size:9px;
+}
+
+.credit-info span:last-child{
+    color:#00ff88;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
 .section{
     margin-top:18px;
 }
 
 .section-head{
     display:flex;
+
     justify-content:space-between;
 
     margin-bottom:7px;
+
     padding:0 4px;
 
     color:#00ff88;
+
     font-size:12px;
+
     letter-spacing:2px;
 }
 
@@ -344,9 +871,14 @@ body::after{
     font-size:9px;
 }
 
-/* CARDS */
+
+/* =========================
+   CARDS
+========================= */
+
 .card{
     position:relative;
+
     overflow:hidden;
 
     margin-bottom:7px;
@@ -373,6 +905,7 @@ body::after{
     content:"";
 
     position:absolute;
+
     top:0;
     left:-100%;
 
@@ -380,6 +913,7 @@ body::after{
     height:1px;
 
     background:#00ff88;
+
     box-shadow:0 0 8px #00ff88;
 
     transition:left .45s ease;
@@ -400,11 +934,11 @@ body::after{
     inset 0 0 15px rgba(0,255,136,.04);
 }
 
-/* SETTING */
 .setting{
-    min-height:58px;
+    min-height:62px;
 
     display:flex;
+
     align-items:center;
 
     padding:10px 12px;
@@ -418,6 +952,7 @@ body::after{
     height:38px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
@@ -459,6 +994,7 @@ body::after{
     color:#00ff88;
 
     font-size:14px;
+
     letter-spacing:.7px;
 
     text-shadow:
@@ -467,6 +1003,7 @@ body::after{
 
 .name::before{
     content:"[+] ";
+
     color:#008f5a;
 }
 
@@ -476,17 +1013,35 @@ body::after{
     color:#006b46;
 
     font-size:9px;
+
     letter-spacing:.3px;
 
     white-space:nowrap;
+
     overflow:hidden;
+
     text-overflow:ellipsis;
+}
+
+.cost{
+    margin-top:4px;
+
+    color:#008f5a;
+
+    font-size:8px;
+}
+
+.cost strong{
+    color:#00ff88;
+
+    text-shadow:0 0 5px rgba(0,255,136,.4);
 }
 
 .arrow{
     color:#00ff88;
 
     font-size:17px;
+
     margin-left:8px;
 
     text-shadow:0 0 7px #00ff88;
@@ -501,12 +1056,18 @@ body::after{
     }
 }
 
-/* MAIN BUTTON */
+
+/* =========================
+   MAIN SETTINGS
+========================= */
+
 .main-access{
     position:relative;
+
     overflow:hidden;
 
     margin-top:20px;
+
     padding:17px 14px;
 
     text-align:center;
@@ -524,6 +1085,7 @@ body::after{
     color:#00ff88;
 
     font-size:15px;
+
     letter-spacing:2px;
 
     cursor:pointer;
@@ -555,6 +1117,7 @@ body::after{
     content:"";
 
     position:absolute;
+
     top:0;
     left:-120%;
 
@@ -575,8 +1138,13 @@ body::after{
 }
 
 @keyframes buttonSweep{
-    0%{left:-120%}
-    45%,100%{left:150%}
+    0%{
+        left:-120%;
+    }
+
+    45%,100%{
+        left:150%;
+    }
 }
 
 .main-access:active{
@@ -584,9 +1152,14 @@ body::after{
     background:#00351d;
 }
 
-/* CONSOLE */
+
+/* =========================
+   CONSOLE
+========================= */
+
 .console{
     margin-top:16px;
+
     padding:11px;
 
     border-left:2px solid #00ff88;
@@ -596,6 +1169,7 @@ body::after{
     color:#007d50;
 
     font-size:9px;
+
     line-height:1.7;
 }
 
@@ -603,7 +1177,11 @@ body::after{
     color:#00ff88;
 }
 
-/* FOOTER */
+
+/* =========================
+   FOOTER
+========================= */
+
 .footer{
     text-align:center;
 
@@ -612,10 +1190,15 @@ body::after{
     color:#004d32;
 
     font-size:8px;
+
     letter-spacing:1px;
 }
 
-/* RIPPLE */
+
+/* =========================
+   RIPPLE
+========================= */
+
 .ripple{
     position:absolute;
 
@@ -633,6 +1216,7 @@ body::after{
     0 0 18px #00ff88;
 
     transform:scale(1);
+
     opacity:.8;
 
     animation:ripple .65s ease-out forwards;
@@ -644,6 +1228,500 @@ body::after{
         opacity:0;
     }
 }
+
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+
+    left:50%;
+    bottom:22px;
+
+    transform:translate(-50%,20px);
+
+    z-index:60;
+
+    width:calc(100% - 30px);
+    max-width:430px;
+
+    padding:12px;
+
+    background:#00150c;
+
+    border:1px solid #00ff88;
+
+    color:#00ff88;
+
+    text-align:center;
+
+    font-size:10px;
+
+    box-shadow:
+    0 0 18px rgba(0,255,136,.22);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.3s ease;
+}
+
+.toast.show{
+    opacity:1;
+
+    transform:translate(-50%,0);
+}
+
+
+/* =========================
+   CUSTOM CYBER MODAL
+========================= */
+
+.cyber-modal{
+    position:fixed;
+
+    inset:0;
+
+    z-index:50;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:18px;
+
+    background:rgba(0,2,1,.76);
+
+    backdrop-filter:blur(5px);
+    -webkit-backdrop-filter:blur(5px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+    transition:.28s ease;
+}
+
+.cyber-modal.show{
+    opacity:1;
+
+    visibility:visible;
+
+    pointer-events:auto;
+}
+
+.cyber-modal-box{
+    width:100%;
+    max-width:420px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:18px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(0,25,13,.98),
+        rgba(0,7,4,.99)
+    );
+
+    border:1px solid #00ff88;
+
+    box-shadow:
+    0 0 20px rgba(0,255,136,.25),
+    0 0 60px rgba(0,255,136,.08),
+    inset 0 0 25px rgba(0,255,136,.035);
+
+    transform:translateY(15px) scale(.96);
+
+    transition:.3s ease;
+}
+
+.cyber-modal.show .cyber-modal-box{
+    transform:translateY(0) scale(1);
+}
+
+.cyber-modal-box::before{
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-100%;
+
+    width:75%;
+    height:2px;
+
+    background:#00ff88;
+
+    box-shadow:0 0 14px #00ff88;
+
+    animation:modalScan 1.8s linear infinite;
+}
+
+@keyframes modalScan{
+    0%{
+        left:-100%;
+    }
+
+    100%{
+        left:140%;
+    }
+}
+
+.modal-corner{
+    position:absolute;
+
+    width:18px;
+    height:18px;
+
+    border-color:#00ff88;
+}
+
+.modal-corner.tl{
+    top:-1px;
+    left:-1px;
+
+    border-top:2px solid;
+    border-left:2px solid;
+}
+
+.modal-corner.tr{
+    top:-1px;
+    right:-1px;
+
+    border-top:2px solid;
+    border-right:2px solid;
+}
+
+.modal-corner.bl{
+    bottom:-1px;
+    left:-1px;
+
+    border-bottom:2px solid;
+    border-left:2px solid;
+}
+
+.modal-corner.br{
+    bottom:-1px;
+    right:-1px;
+
+    border-bottom:2px solid;
+    border-right:2px solid;
+}
+
+.confirm-head{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding-bottom:11px;
+
+    border-bottom:1px dashed rgba(0,255,136,.3);
+}
+
+.confirm-symbol{
+    width:38px;
+    height:38px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid #00ff88;
+
+    color:#00ff88;
+
+    background:#00150c;
+
+    font-size:13px;
+
+    text-shadow:0 0 8px #00ff88;
+
+    box-shadow:
+    0 0 10px rgba(0,255,136,.18),
+    inset 0 0 10px rgba(0,255,136,.05);
+}
+
+.confirm-title{
+    color:#00ff88;
+
+    font-size:13px;
+
+    letter-spacing:1.5px;
+}
+
+.confirm-sub{
+    margin-top:3px;
+
+    color:#006b46;
+
+    font-size:8px;
+}
+
+.confirm-service{
+    margin-top:14px;
+
+    padding:11px;
+
+    background:rgba(0,255,136,.035);
+
+    border:1px solid rgba(0,255,136,.2);
+}
+
+.confirm-service-name{
+    color:#00ff88;
+
+    font-size:14px;
+
+    letter-spacing:.5px;
+}
+
+.confirm-service-desc{
+    margin-top:4px;
+
+    color:#006b46;
+
+    font-size:8px;
+}
+
+.confirm-row{
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:9px 0;
+
+    border-bottom:1px dashed rgba(0,255,136,.14);
+
+    font-size:9px;
+}
+
+.confirm-row:last-child{
+    border-bottom:0;
+}
+
+.confirm-row span:first-child{
+    color:#007d50;
+}
+
+.confirm-row span:last-child{
+    color:#00ff88;
+}
+
+.confirm-cost{
+    font-size:12px !important;
+
+    text-shadow:
+    0 0 7px #00ff88;
+}
+
+.confirm-buttons{
+    display:flex;
+
+    gap:7px;
+
+    margin-top:14px;
+}
+
+.confirm-btn{
+    flex:1;
+
+    padding:12px 5px;
+
+    border:1px solid rgba(0,255,136,.4);
+
+    background:#00150c;
+
+    color:#00ff88;
+
+    font-size:9px;
+
+    letter-spacing:1px;
+
+    cursor:pointer;
+}
+
+.confirm-btn.confirm{
+    border-color:#00ff88;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,136,.08),
+        rgba(0,50,27,.9),
+        rgba(0,255,136,.08)
+    );
+
+    box-shadow:
+    0 0 13px rgba(0,255,136,.15);
+}
+
+.confirm-btn:active{
+    transform:scale(.96);
+}
+
+.confirm-warning{
+    margin-top:10px;
+
+    color:#004d32;
+
+    text-align:center;
+
+    font-size:7px;
+
+    letter-spacing:.5px;
+}
+
+
+/* =========================
+   ADD BALANCE MODAL
+========================= */
+
+.balance-code{
+    width:100%;
+
+    padding:12px;
+
+    margin-top:7px;
+
+    outline:none;
+
+    background:#000d08;
+
+    border:1px solid rgba(0,255,136,.3);
+
+    color:#00ff88;
+
+    font-size:11px;
+
+    letter-spacing:1px;
+}
+
+.balance-code:focus{
+    border-color:#00ff88;
+
+    box-shadow:
+    0 0 10px rgba(0,255,136,.15);
+}
+
+.fixed-amount{
+    padding:13px;
+
+    margin-top:7px;
+
+    text-align:center;
+
+    border:1px solid rgba(0,255,136,.3);
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,136,.04),
+        rgba(0,255,136,.09),
+        rgba(0,255,136,.04)
+    );
+
+    color:#00ff88;
+
+    font-size:20px;
+
+    text-shadow:
+    0 0 8px #00ff88;
+}
+
+.code-note{
+    margin-top:5px;
+
+    color:#005f3b;
+
+    font-size:7px;
+}
+
+
+/* =========================
+   PAYMENT QR
+========================= */
+
+.payment-qr{
+    width:180px;
+    height:180px;
+    aspect-ratio:1 / 1;
+    margin:12px auto 10px;
+    padding:5px;
+    background:#fff;
+    border:1px solid #00ff88;
+    box-shadow:0 0 16px rgba(0,255,136,.2);
+}
+
+.payment-qr img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+@media(max-width:400px){
+    .payment-qr{
+        width:160px;
+        height:160px;
+    }
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+.history-list{
+    max-height:260px;
+
+    overflow:auto;
+}
+
+.history-item{
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:9px 0;
+
+    border-bottom:1px dashed rgba(0,255,136,.15);
+
+    font-size:9px;
+}
+
+.history-item:last-child{
+    border-bottom:0;
+}
+
+.history-name{
+    color:#008f5a;
+}
+
+.history-value{
+    color:#00ff88;
+
+    white-space:nowrap;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media(max-width:400px){
 
@@ -673,6 +1751,10 @@ body::after{
         height:35px;
         margin-right:10px;
     }
+
+    .wallet-balance{
+        font-size:24px;
+    }
 }
 </style>
 </head>
@@ -681,18 +1763,152 @@ body::after{
 
 <canvas id="matrix"></canvas>
 
-<div class="app">
+
+<!-- =========================
+     AUTH SCREEN
+========================= -->
+
+<div class="auth-screen" id="authScreen">
+
+    <div class="auth-box">
+
+        <span class="auth-corner tl"></span>
+        <span class="auth-corner tr"></span>
+        <span class="auth-corner bl"></span>
+        <span class="auth-corner br"></span>
+
+        <div class="auth-brand">
+
+            <div class="instagram-icon"></div>
+
+            <div>
+
+                <div class="auth-title">
+                    rizwanx93070
+                </div>
+
+                <div class="auth-subtitle">
+                    SECURE USER ACCESS TERMINAL
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="auth-mode">
+
+            <button
+                class="auth-tab active"
+                id="loginTab"
+                onclick="switchAuth('login')">
+                LOGIN
+            </button>
+
+            <button
+                class="auth-tab"
+                id="signupTab"
+                onclick="switchAuth('signup')">
+                SIGN UP
+            </button>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label class="input-label">
+                USERNAME
+            </label>
+
+            <input
+                class="auth-input"
+                id="authUsername"
+                type="text"
+                placeholder="ENTER USERNAME"
+                autocomplete="off">
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label class="input-label">
+                PASSWORD
+            </label>
+
+            <input
+                class="auth-input"
+                id="authPassword"
+                type="password"
+                placeholder="ENTER PASSWORD">
+
+        </div>
+
+
+        <div
+            class="input-group"
+            id="confirmGroup"
+            style="display:none">
+
+            <label class="input-label">
+                CONFIRM PASSWORD
+            </label>
+
+            <input
+                class="auth-input"
+                id="authConfirm"
+                type="password"
+                placeholder="CONFIRM PASSWORD">
+
+        </div>
+
+
+        <div
+            class="auth-message"
+            id="authMessage">
+        </div>
+
+
+        <button
+            class="auth-button"
+            id="authButton"
+            onclick="submitAuth()">
+            [ LOGIN ]
+        </button>
+
+
+        <div class="demo-note">
+            DEMO MODE • LOCAL WALLET<br>
+            REAL AUTHENTICATION &amp; PAYMENT WILL BE CONNECTED LATER
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MAIN APP
+========================= -->
+
+<div class="app hidden-page" id="app">
 
     <div class="terminal-top">
 
         <div class="top-line">
 
             <div class="top-left">
+
                 <span class="dot"></span>
+
                 <span>LOCAL_NODE</span>
+
             </div>
 
-            <span id="clock">00:00:00</span>
+            <span id="clock">
+                00:00:00
+            </span>
 
         </div>
 
@@ -702,11 +1918,15 @@ body::after{
             <div class="instagram-icon"></div>
 
             <div>
-                <div class="title">rizwanx93070</div>
+
+                <div class="title">
+                    rizwanx93070
+                </div>
 
                 <div class="subtitle">
                     CYBER DEVICE CONTROL TERMINAL
                 </div>
+
             </div>
 
         </div>
@@ -715,9 +1935,102 @@ body::after{
         <div class="status">
 
             SYSTEM STATUS :
-            <span id="statusText">ACCESS_GRANTED</span>
+            <span id="statusText">
+                ACCESS_GRANTED
+            </span>
 
         </div>
+
+    </div>
+
+
+    <!-- USER -->
+
+    <div class="user-bar">
+
+        <div class="user-info">
+
+            <div class="user-label">
+                AUTHENTICATED USER
+            </div>
+
+            <div
+                class="user-name"
+                id="userName">
+                USER
+            </div>
+
+        </div>
+
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+            LOGOUT
+        </button>
+
+    </div>
+
+
+    <!-- WALLET -->
+
+    <div class="wallet-card">
+
+        <div class="wallet-head">
+
+            <div class="wallet-label">
+                // DIGITAL_WALLET
+            </div>
+
+            <div class="wallet-icon">
+                ◈
+            </div>
+
+        </div>
+
+
+        <div
+            class="wallet-balance"
+            id="walletBalance">
+            ₹0.00
+        </div>
+
+
+        <div class="wallet-sub">
+            AVAILABLE SERVICE BALANCE
+        </div>
+
+
+        <div class="wallet-actions">
+
+            <button
+                class="wallet-action"
+                onclick="openBalanceModal()">
+                + ADD BALANCE
+            </button>
+
+            <button
+                class="wallet-action"
+                onclick="openHistory()">
+                TRANSACTIONS
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- BALANCE -->
+
+    <div class="credit-info">
+
+        <span>
+            AVAILABLE SERVICE BALANCE
+        </span>
+
+        <span id="creditBalance">
+            ₹0.00
+        </span>
 
     </div>
 
@@ -727,84 +2040,151 @@ body::after{
     <div class="section">
 
         <div class="section-head">
-            <span>// CONNECTION_MATRIX</span>
-            <span class="right">[01]</span>
+
+            <span>
+                // CONNECTION_MATRIX
+            </span>
+
+            <span class="right">
+                [01]
+            </span>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.WIFI_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Wi-Fi','android.settings.WIFI_SETTINGS',250)">
 
                 <div class="symbol s1"></div>
 
                 <div class="info">
-                    <div class="name">Wi-Fi</div>
+
+                    <div class="name">
+                        Wi-Fi
+                    </div>
+
                     <div class="desc">
                         WIRELESS NETWORK INTERFACE
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹250</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.WIRELESS_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Mobile network','android.settings.WIRELESS_SETTINGS',400)">
 
                 <div class="symbol s2"></div>
 
                 <div class="info">
-                    <div class="name">Mobile network</div>
+
+                    <div class="name">
+                        Mobile network
+                    </div>
+
                     <div class="desc">
                         CELLULAR DATA CONFIGURATION
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹400</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.BLUETOOTH_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Bluetooth','android.settings.BLUETOOTH_SETTINGS',500)">
 
                 <div class="symbol s3"></div>
 
                 <div class="info">
-                    <div class="name">Bluetooth</div>
+
+                    <div class="name">
+                        Bluetooth
+                    </div>
+
                     <div class="desc">
                         SHORT RANGE DEVICE LINK
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹500</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.WIRELESS_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Connection & sharing','android.settings.WIRELESS_SETTINGS',650)">
 
                 <div class="symbol s4"></div>
 
                 <div class="info">
-                    <div class="name">Connection &amp; sharing</div>
+
+                    <div class="name">
+                        Connection &amp; sharing
+                    </div>
+
                     <div class="desc">
                         NETWORK / SHARING PROTOCOLS
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹650</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
     </div>
@@ -815,18 +2195,28 @@ body::after{
     <div class="section">
 
         <div class="section-head">
-            <span>// VISUAL_MATRIX</span>
-            <span class="right">[02]</span>
+
+            <span>
+                // VISUAL_MATRIX
+            </span>
+
+            <span class="right">
+                [02]
+            </span>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.DISPLAY_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Display & brightness','android.settings.DISPLAY_SETTINGS',750)">
 
                 <div class="symbol s5"></div>
 
                 <div class="info">
+
                     <div class="name">
                         Display &amp; brightness
                     </div>
@@ -834,11 +2224,20 @@ body::after{
                     <div class="desc">
                         SCREEN OUTPUT PARAMETERS
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹750</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
     </div>
@@ -849,38 +2248,62 @@ body::after{
     <div class="section">
 
         <div class="section-head">
-            <span>// DEVICE_CORE</span>
-            <span class="right">[03]</span>
+
+            <span>
+                // DEVICE_CORE
+            </span>
+
+            <span class="right">
+                [03]
+            </span>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.APPLICATION_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Apps','android.settings.APPLICATION_SETTINGS',850)">
 
                 <div class="symbol s6"></div>
 
                 <div class="info">
-                    <div class="name">Apps</div>
+
+                    <div class="name">
+                        Apps
+                    </div>
 
                     <div class="desc">
                         APPLICATION PROCESS CONTROL
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹850</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.SECURITY_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Security & privacy','android.settings.SECURITY_SETTINGS',950)">
 
                 <div class="symbol s7"></div>
 
                 <div class="info">
+
                     <div class="name">
                         Security &amp; privacy
                     </div>
@@ -888,51 +2311,88 @@ body::after{
                     <div class="desc">
                         SYSTEM SECURITY PARAMETERS
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹950</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.LOCATION_SOURCE_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Location','android.settings.LOCATION_SOURCE_SETTINGS',1000)">
 
                 <div class="symbol s8"></div>
 
                 <div class="info">
-                    <div class="name">Location</div>
+
+                    <div class="name">
+                        Location
+                    </div>
 
                     <div class="desc">
                         LOCATION SERVICE CONTROL
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹1000</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.BATTERY_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Battery','android.settings.BATTERY_SETTINGS',1050)">
 
                 <div class="symbol s9"></div>
 
                 <div class="info">
-                    <div class="name">Battery</div>
+
+                    <div class="name">
+                        Battery
+                    </div>
 
                     <div class="desc">
                         POWER / ENERGY MANAGEMENT
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹1050</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
     </div>
@@ -943,38 +2403,62 @@ body::after{
     <div class="section">
 
         <div class="section-head">
-            <span>// SYSTEM_KERNEL</span>
-            <span class="right">[04]</span>
+
+            <span>
+                // SYSTEM_KERNEL
+            </span>
+
+            <span class="right">
+                [04]
+            </span>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.DEVICE_INFO_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'About device','android.settings.DEVICE_INFO_SETTINGS',1150)">
 
                 <div class="symbol s10"></div>
 
                 <div class="info">
-                    <div class="name">About device</div>
+
+                    <div class="name">
+                        About device
+                    </div>
 
                     <div class="desc">
                         DEVICE INFORMATION / BUILD DATA
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹1150</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
 
         <div class="card">
-            <div class="setting"
-            onclick="launch(this,'android.settings.SYNC_SETTINGS')">
+
+            <div
+                class="setting"
+                onclick="useService(this,'Users & accounts','android.settings.SYNC_SETTINGS',1250)">
 
                 <div class="symbol s11"></div>
 
                 <div class="info">
+
                     <div class="name">
                         Users &amp; accounts
                     </div>
@@ -982,11 +2466,20 @@ body::after{
                     <div class="desc">
                         ACCOUNT / USER SYNCHRONIZATION
                     </div>
+
+                    <div class="cost">
+                        SERVICE COST :
+                        <strong>₹1250</strong>
+                    </div>
+
                 </div>
 
-                <div class="arrow">›</div>
+                <div class="arrow">
+                    ›
+                </div>
 
             </div>
+
         </div>
 
     </div>
@@ -994,10 +2487,15 @@ body::after{
 
     <!-- MAIN SETTINGS -->
 
-    <div class="main-access"
-    onclick="openMain(this)">
+    <div
+        class="main-access"
+        onclick="useService(this,'Main Android Settings','android-main',1250)">
 
         [ ⚙ ] OPEN_MAIN_SETTINGS
+
+        <div style="font-size:8px;margin-top:5px;color:#007d50">
+            SERVICE COST : ₹1250
+        </div>
 
     </div>
 
@@ -1007,7 +2505,9 @@ body::after{
     <div class="console">
 
         <div>
-            <span class="green">root@android</span>:~$ ./system_control
+            <span class="green">
+                root@android
+            </span>:~$ ./system_control
         </div>
 
         <div>
@@ -1023,7 +2523,27 @@ body::after{
         </div>
 
         <div>
-            &gt; <span class="green">READY_</span><span id="cursor">█</span>
+            &gt; wallet module:
+            <span class="green">
+                ONLINE
+            </span>
+        </div>
+
+        <div>
+            &gt; balance engine:
+            <span class="green">
+                ONLINE
+            </span>
+        </div>
+
+        <div>
+            &gt;
+            <span class="green">
+                READY_
+            </span>
+            <span id="cursor">
+                █
+            </span>
         </div>
 
     </div>
@@ -1033,6 +2553,286 @@ body::after{
         rizwanx93070://CONTROL • LOCAL ANDROID SYSTEM INTERFACE
     </div>
 
+</div>
+
+
+<!-- =========================
+     SERVICE CONFIRM MODAL
+========================= -->
+
+<div
+    class="cyber-modal"
+    id="serviceModal">
+
+    <div class="cyber-modal-box">
+
+        <span class="modal-corner tl"></span>
+        <span class="modal-corner tr"></span>
+        <span class="modal-corner bl"></span>
+        <span class="modal-corner br"></span>
+
+
+        <div class="confirm-head">
+
+            <div class="confirm-symbol">
+                &gt;_
+            </div>
+
+            <div>
+
+                <div class="confirm-title">
+                    SERVICE_AUTHORIZATION
+                </div>
+
+                <div class="confirm-sub">
+                    CONFIRM LOCAL SERVICE ACCESS
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="confirm-service">
+
+            <div
+                class="confirm-service-name"
+                id="confirmServiceName">
+                SERVICE
+            </div>
+
+            <div class="confirm-service-desc">
+                REQUESTED SYSTEM OPERATION
+            </div>
+
+
+            <div class="confirm-row">
+
+                <span>
+                    SERVICE COST
+                </span>
+
+                <span
+                    class="confirm-cost"
+                    id="confirmCost">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <div class="confirm-row">
+
+                <span>
+                    CURRENT BALANCE
+                </span>
+
+                <span id="confirmBalance">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <div class="confirm-row">
+
+                <span>
+                    BALANCE AFTER
+                </span>
+
+                <span id="confirmAfter">
+                    ₹0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="confirm-buttons">
+
+            <button
+                class="confirm-btn"
+                onclick="closeServiceModal()">
+                CANCEL
+            </button>
+
+            <button
+                class="confirm-btn confirm"
+                onclick="confirmService()">
+                [ CONFIRM ACCESS ]
+            </button>
+
+        </div>
+
+
+        <div class="confirm-warning">
+            TRANSACTION WILL BE RECORDED IN LOCAL DEMO HISTORY
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     ADD BALANCE MODAL
+========================= -->
+
+<div
+    class="cyber-modal"
+    id="balanceModal">
+
+    <div class="cyber-modal-box">
+
+        <span class="modal-corner tl"></span>
+        <span class="modal-corner tr"></span>
+        <span class="modal-corner bl"></span>
+        <span class="modal-corner br"></span>
+
+
+        <div class="confirm-head">
+
+            <div class="confirm-symbol">
+                ₹
+            </div>
+
+            <div>
+
+                <div class="confirm-title">
+                    ADD_BALANCE
+                </div>
+
+                <div class="confirm-sub">
+                    DEMO WALLET TOP-UP MODULE
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="confirm-service">
+
+            <div class="confirm-service-name">
+                FIXED TOP-UP VALUE
+            </div>
+
+            <div class="confirm-service-desc">
+                CURRENT DEMO CONFIGURATION
+            </div>
+
+
+            <div class="fixed-amount">
+                ₹14,999
+            </div>
+
+            <div class="payment-qr">
+                <img src="qr.png" alt="Payment QR Code">
+            </div>
+
+            <div class="code-note">
+                SCAN QR • COMPLETE PAYMENT • ENTER 12-DIGIT UTR / TRANSACTION ID
+            </div>
+
+            <input
+                class="balance-code"
+                id="balanceCode"
+                type="text"
+                inputmode="numeric"
+                maxlength="12"
+                placeholder="ENTER 12-DIGIT UTR / TRANSACTION ID"
+                autocomplete="off"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,12)">
+
+        </div>
+
+
+        <div class="confirm-buttons">
+
+            <button
+                class="confirm-btn"
+                onclick="closeBalanceModal()">
+                CANCEL
+            </button>
+
+            <button
+                class="confirm-btn confirm"
+                onclick="dummyTopup()">
+                [ VERIFY PAYMENT ]
+            </button>
+
+        </div>
+
+
+        <div class="confirm-warning">
+            DEMO ONLY • NO REAL PAYMENT IS PROCESSED
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     HISTORY MODAL
+========================= -->
+
+<div
+    class="cyber-modal"
+    id="historyModal">
+
+    <div class="cyber-modal-box">
+
+        <span class="modal-corner tl"></span>
+        <span class="modal-corner tr"></span>
+        <span class="modal-corner bl"></span>
+        <span class="modal-corner br"></span>
+
+
+        <div class="confirm-head">
+
+            <div class="confirm-symbol">
+                ≡
+            </div>
+
+            <div>
+
+                <div class="confirm-title">
+                    TRANSACTION_LOG
+                </div>
+
+                <div class="confirm-sub">
+                    LOCAL WALLET ACTIVITY
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="history-list"
+            id="historyList"
+            style="margin-top:10px">
+        </div>
+
+
+        <button
+            class="close-modal"
+            style="width:100%;margin-top:12px;padding:11px;border:1px solid rgba(0,255,136,.25);background:#00150c;color:#00ff88;cursor:pointer;font-size:9px"
+            onclick="closeHistory()">
+            CLOSE
+        </button>
+
+    </div>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast">
 </div>
 
 
@@ -1076,6 +2876,7 @@ function resizeMatrix(){
         Math.random() * -80;
 
     }
+
 }
 
 resizeMatrix();
@@ -1103,17 +2904,25 @@ function drawMatrix(){
     ctx.font =
     "13px monospace";
 
-    for(let i=0;i<drops.length;i++){
+    for(
+        let i=0;
+        i<drops.length;
+        i++
+    ){
 
         const text =
         chars[
             Math.floor(
-                Math.random()*chars.length
+                Math.random() *
+                chars.length
             )
         ];
 
-        const x = i * 13;
-        const y = drops[i] * 13;
+        const x =
+        i * 13;
+
+        const y =
+        drops[i] * 13;
 
         ctx.fillStyle =
         Math.random() > .96
@@ -1130,11 +2939,15 @@ function drawMatrix(){
             y > height &&
             Math.random() > .975
         ){
+
             drops[i] = 0;
+
         }
 
         drops[i] += .65;
+
     }
+
 }
 
 setInterval(
@@ -1168,6 +2981,7 @@ function updateClock(){
         "clock"
     ).textContent =
     h + ":" + m + ":" + s;
+
 }
 
 setInterval(
@@ -1239,13 +3053,498 @@ setInterval(()=>{
 
 
 /* =========================
+   STORAGE
+========================= */
+
+const STORAGE_USER =
+"rz_demo_user";
+
+const STORAGE_SESSION =
+"rz_demo_session";
+
+const STORAGE_BALANCE =
+"rz_demo_balance";
+
+const STORAGE_HISTORY =
+"rz_demo_history";
+
+
+function getUser(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                STORAGE_USER
+            )
+        );
+
+    }catch(e){
+
+        return null;
+
+    }
+
+}
+
+
+function saveUser(user){
+
+    localStorage.setItem(
+        STORAGE_USER,
+        JSON.stringify(user)
+    );
+
+}
+
+
+function getBalance(){
+
+    return Number(
+        localStorage.getItem(
+            STORAGE_BALANCE
+        ) || 0
+    );
+
+}
+
+
+function setBalance(value){
+
+    localStorage.setItem(
+        STORAGE_BALANCE,
+        Number(
+            Math.max(
+                0,
+                value
+            )
+        ).toFixed(2)
+    );
+
+}
+
+
+function getHistory(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                STORAGE_HISTORY
+            )
+        ) || [];
+
+    }catch(e){
+
+        return [];
+
+    }
+
+}
+
+
+function saveHistory(history){
+
+    localStorage.setItem(
+        STORAGE_HISTORY,
+        JSON.stringify(history)
+    );
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+let authMode = "login";
+
+function switchAuth(mode){
+
+    authMode = mode;
+
+    const loginTab =
+    document.getElementById(
+        "loginTab"
+    );
+
+    const signupTab =
+    document.getElementById(
+        "signupTab"
+    );
+
+    const confirmGroup =
+    document.getElementById(
+        "confirmGroup"
+    );
+
+    const authButton =
+    document.getElementById(
+        "authButton"
+    );
+
+    const message =
+    document.getElementById(
+        "authMessage"
+    );
+
+    message.textContent = "";
+
+    message.className =
+    "auth-message";
+
+    if(mode === "login"){
+
+        loginTab.classList.add(
+            "active"
+        );
+
+        signupTab.classList.remove(
+            "active"
+        );
+
+        confirmGroup.style.display =
+        "none";
+
+        authButton.textContent =
+        "[ LOGIN ]";
+
+    }else{
+
+        signupTab.classList.add(
+            "active"
+        );
+
+        loginTab.classList.remove(
+            "active"
+        );
+
+        confirmGroup.style.display =
+        "block";
+
+        authButton.textContent =
+        "[ CREATE ACCOUNT ]";
+
+    }
+
+}
+
+
+function submitAuth(){
+
+    const username =
+    document.getElementById(
+        "authUsername"
+    ).value.trim();
+
+    const password =
+    document.getElementById(
+        "authPassword"
+    ).value;
+
+    const confirm =
+    document.getElementById(
+        "authConfirm"
+    ).value;
+
+    const message =
+    document.getElementById(
+        "authMessage"
+    );
+
+    message.className =
+    "auth-message";
+
+    if(
+        !username ||
+        !password
+    ){
+
+        message.textContent =
+        "ERROR: ALL FIELDS REQUIRED";
+
+        message.classList.add(
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(authMode === "signup"){
+
+        if(password.length < 4){
+
+            message.textContent =
+            "ERROR: PASSWORD TOO SHORT";
+
+            message.classList.add(
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(password !== confirm){
+
+            message.textContent =
+            "ERROR: PASSWORD MISMATCH";
+
+            message.classList.add(
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(getUser()){
+
+            message.textContent =
+            "USER ALREADY EXISTS — LOGIN";
+
+            message.classList.add(
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        saveUser({
+
+            username:username,
+
+            password:password
+
+        });
+
+
+        setBalance(0);
+
+        saveHistory([{
+
+            type:"ACCOUNT",
+
+            name:"Account created",
+
+            value:"SYSTEM",
+
+            time:new Date()
+            .toLocaleString()
+
+        }]);
+
+
+        localStorage.setItem(
+            STORAGE_SESSION,
+            "1"
+        );
+
+
+        showApp();
+
+        return;
+
+    }
+
+
+    const user =
+    getUser();
+
+
+    if(!user){
+
+        message.textContent =
+        "NO ACCOUNT FOUND — SIGN UP FIRST";
+
+        message.classList.add(
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        user.username !== username ||
+        user.password !== password
+    ){
+
+        message.textContent =
+        "ACCESS DENIED — INVALID LOGIN";
+
+        message.classList.add(
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        STORAGE_SESSION,
+        "1"
+    );
+
+
+    showApp();
+
+}
+
+
+/* =========================
+   APP
+========================= */
+
+function showApp(){
+
+    document
+    .getElementById("authScreen")
+    .classList.add("hidden");
+
+    document
+    .getElementById("app")
+    .classList.remove(
+        "hidden-page"
+    );
+
+    const user =
+    getUser();
+
+    document.getElementById(
+        "userName"
+    ).textContent =
+    user
+    ? user.username
+    : "USER";
+
+    updateBalanceUI();
+
+}
+
+
+function logout(){
+
+    localStorage.removeItem(
+        STORAGE_SESSION
+    );
+
+    document
+    .getElementById("app")
+    .classList.add(
+        "hidden-page"
+    );
+
+    document
+    .getElementById("authScreen")
+    .classList.remove(
+        "hidden"
+    );
+
+    document.getElementById(
+        "authPassword"
+    ).value = "";
+
+    document.getElementById(
+        "authConfirm"
+    ).value = "";
+
+    switchAuth("login");
+
+}
+
+
+/* =========================
+   BALANCE UI
+========================= */
+
+function money(value){
+
+    return "₹" +
+    Number(value)
+    .toLocaleString(
+        "en-IN",
+        {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        }
+    );
+
+}
+
+
+function updateBalanceUI(){
+
+    const balance =
+    getBalance();
+
+    document.getElementById(
+        "walletBalance"
+    ).textContent =
+    money(balance);
+
+    document.getElementById(
+        "creditBalance"
+    ).textContent =
+    money(balance);
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer;
+
+function showToast(text){
+
+    const toast =
+    document.getElementById(
+        "toast"
+    );
+
+    toast.textContent =
+    text;
+
+    toast.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        toastTimer
+    );
+
+    toastTimer =
+    setTimeout(()=>{
+
+        toast.classList.remove(
+            "show"
+        );
+
+    },2200);
+
+}
+
+
+/* =========================
    RIPPLE
 ========================= */
 
 function createRipple(element){
 
     const ripple =
-    document.createElement("span");
+    document.createElement(
+        "span"
+    );
 
     ripple.className =
     "ripple";
@@ -1264,53 +3563,497 @@ function createRipple(element){
     );
 
     setTimeout(()=>{
+
         ripple.remove();
+
     },700);
+
 }
 
 
 /* =========================
-   ANDROID SETTINGS
+   SERVICE REQUEST
 ========================= */
 
-function launch(
+let pendingService = null;
+
+
+function useService(
     element,
-    action
+    serviceName,
+    action,
+    cost
 ){
 
-    createRipple(element);
+    createRipple(
+        element
+    );
+
+    const balance =
+    getBalance();
+
+
+    if(balance < cost){
+
+        showToast(
+            "INSUFFICIENT BALANCE • REQUIRED " +
+            money(cost)
+        );
+
+        return;
+
+    }
+
+
+    pendingService = {
+
+        element:element,
+
+        serviceName:serviceName,
+
+        action:action,
+
+        cost:cost
+
+    };
+
+
+    document.getElementById(
+        "confirmServiceName"
+    ).textContent =
+    serviceName;
+
+
+    document.getElementById(
+        "confirmCost"
+    ).textContent =
+    money(cost);
+
+
+    document.getElementById(
+        "confirmBalance"
+    ).textContent =
+    money(balance);
+
+
+    document.getElementById(
+        "confirmAfter"
+    ).textContent =
+    money(
+        balance - cost
+    );
+
+
+    document
+    .getElementById("serviceModal")
+    .classList.add("show");
+
+}
+
+
+function closeServiceModal(){
+
+    document
+    .getElementById("serviceModal")
+    .classList.remove("show");
+
+    pendingService = null;
+
+}
+
+
+function confirmService(){
+
+    if(!pendingService){
+
+        return;
+
+    }
+
+
+    const service =
+    pendingService;
+
+
+    const balance =
+    getBalance();
+
+
+    if(balance < service.cost){
+
+        closeServiceModal();
+
+        showToast(
+            "BALANCE CHECK FAILED"
+        );
+
+        return;
+
+    }
+
+
+    const newBalance =
+    balance - service.cost;
+
+
+    setBalance(
+        newBalance
+    );
+
+
+    addTransaction(
+        service.serviceName,
+        "-" + money(
+            service.cost
+        )
+    );
+
+
+    updateBalanceUI();
+
+    closeServiceModal();
+
+
+    showToast(
+        "ACCESS GRANTED • " +
+        money(service.cost) +
+        " DEDUCTED"
+    );
+
 
     setTimeout(()=>{
+
+        if(
+            service.action ===
+            "android-main"
+        ){
+
+            window.location.href =
+            "intent://com.android.settings/" +
+            "#Intent;" +
+            "scheme=android-app;" +
+            "end";
+
+            return;
+
+        }
+
 
         window.location.href =
         "intent:#Intent;" +
         "action=" +
-        action +
+        service.action +
         ";" +
         "end";
 
-    },180);
+    },350);
+
 }
 
 
 /* =========================
-   MAIN SETTINGS
+   ADD BALANCE
 ========================= */
 
-function openMain(element){
+function openBalanceModal(){
 
-    createRipple(element);
+    document
+    .getElementById("balanceModal")
+    .classList.add("show");
 
-    setTimeout(()=>{
-
-        window.location.href =
-        "intent://com.android.settings/" +
-        "#Intent;" +
-        "scheme=android-app;" +
-        "end";
-
-    },180);
 }
+
+
+function closeBalanceModal(){
+
+    document
+    .getElementById("balanceModal")
+    .classList.remove("show");
+
+}
+
+
+function dummyTopup(){
+
+    const code =
+    document.getElementById(
+        "balanceCode"
+    ).value.trim();
+
+    /* UTR validation is dummy for now; backend verification later. */
+    if(!/^[0-9]{12}$/.test(code)){
+        showToast(
+            "ENTER VALID 12-DIGIT UTR / TRANSACTION ID"
+        );
+        return;
+    }
+
+    /* Fixed demo recharge amount. Real payment verification will be added later. */
+    const amount = 14999;
+
+    const oldBalance =
+    getBalance();
+
+    setBalance(
+        oldBalance + amount
+    );
+
+    addTransaction(
+        "QR payment • UTR " + code,
+        "+" + money(amount)
+    );
+
+    updateBalanceUI();
+
+    document.getElementById(
+        "balanceCode"
+    ).value = "";
+
+    closeBalanceModal();
+
+    showToast(
+        "PAYMENT VERIFIED • BALANCE ADDED " +
+        money(amount)
+    );
+
+}
+
+
+/* =========================
+   TRANSACTIONS
+========================= */
+
+function addTransaction(
+    name,
+    value
+){
+
+    const history =
+    getHistory();
+
+
+    history.unshift({
+
+        type:"TRANSACTION",
+
+        name:name,
+
+        value:value,
+
+        time:new Date()
+        .toLocaleString()
+
+    });
+
+
+    if(history.length > 50){
+
+        history.splice(
+            50
+        );
+
+    }
+
+
+    saveHistory(
+        history
+    );
+
+}
+
+
+function openHistory(){
+
+    const list =
+    document.getElementById(
+        "historyList"
+    );
+
+    const history =
+    getHistory();
+
+
+    if(!history.length){
+
+        list.innerHTML =
+        '<div style="color:#004d32;font-size:9px;padding:15px 0">NO TRANSACTIONS</div>';
+
+    }else{
+
+        list.innerHTML =
+        history.map(item=>{
+
+            return `
+
+                <div class="history-item">
+
+                    <div>
+
+                        <div class="history-name">
+                            ${escapeHTML(item.name)}
+                        </div>
+
+                        <div style="color:#004d32;font-size:7px;margin-top:3px">
+                            ${escapeHTML(item.time)}
+                        </div>
+
+                    </div>
+
+                    <div class="history-value">
+                        ${escapeHTML(item.value)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+    }
+
+
+    document
+    .getElementById("historyModal")
+    .classList.add("show");
+
+}
+
+
+function closeHistory(){
+
+    document
+    .getElementById("historyModal")
+    .classList.remove("show");
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value)
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================
+   CLOSE MODALS ON BACKDROP
+========================= */
+
+document
+.getElementById("serviceModal")
+.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            e.target === this
+        ){
+
+            closeServiceModal();
+
+        }
+
+    }
+);
+
+
+document
+.getElementById("balanceModal")
+.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            e.target === this
+        ){
+
+            closeBalanceModal();
+
+        }
+
+    }
+);
+
+
+document
+.getElementById("historyModal")
+.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            e.target === this
+        ){
+
+            closeHistory();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   INITIAL SESSION
+========================= */
+
+(function(){
+
+    const session =
+    localStorage.getItem(
+        STORAGE_SESSION
+    );
+
+
+    if(
+        session === "1" &&
+        getUser()
+    ){
+
+        showApp();
+
+    }else{
+
+        document
+        .getElementById("authScreen")
+        .classList.remove(
+            "hidden"
+        );
+
+        document
+        .getElementById("app")
+        .classList.add(
+            "hidden-page"
+        );
+
+    }
+
+})();
 
 </script>
 
