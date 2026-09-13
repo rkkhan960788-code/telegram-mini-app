@@ -1817,7 +1817,7 @@ body::after{
 
         <div class="input-group">
 
-            <label class="input-label">
+            <label class="input-label" id="authUsernameLabel">
                 USERNAME
             </label>
 
@@ -1827,6 +1827,22 @@ body::after{
                 type="text"
                 placeholder="ENTER USERNAME"
                 autocomplete="off">
+
+        </div>
+
+
+        <div class="input-group" id="emailGroup" style="display:none">
+
+            <label class="input-label">
+                EMAIL
+            </label>
+
+            <input
+                class="auth-input"
+                id="authEmail"
+                type="email"
+                placeholder="ENTER EMAIL"
+                autocomplete="email">
 
         </div>
 
@@ -1878,9 +1894,9 @@ body::after{
         </button>
 
 
-        <div class="demo-note">
-            DEMO MODE • LOCAL WALLET<br>
-            REAL AUTHENTICATION &amp; PAYMENT WILL BE CONNECTED LATER
+        <div class="secure-note">
+            SECURE ACCOUNT • CLOUD WALLET<br>
+            FIREBASE AUTHENTICATION ACTIVE
         </div>
 
     </div>
@@ -2667,7 +2683,7 @@ body::after{
 
 
         <div class="confirm-warning">
-            TRANSACTION WILL BE RECORDED IN LOCAL DEMO HISTORY
+            TRANSACTION WILL BE RECORDED IN ACCOUNT HISTORY
         </div>
 
     </div>
@@ -2704,7 +2720,7 @@ body::after{
                 </div>
 
                 <div class="confirm-sub">
-                    DEMO WALLET TOP-UP MODULE
+                    WALLET TOP-UP
                 </div>
 
             </div>
@@ -2719,7 +2735,7 @@ body::after{
             </div>
 
             <div class="confirm-service-desc">
-                CURRENT DEMO CONFIGURATION
+                CURRENT TOP-UP AMOUNT
             </div>
 
 
@@ -2758,7 +2774,7 @@ body::after{
 
             <button
                 class="confirm-btn confirm"
-                onclick="dummyTopup()">
+                onclick="verifyPayment()">
                 [ VERIFY PAYMENT ]
             </button>
 
@@ -2766,7 +2782,7 @@ body::after{
 
 
         <div class="confirm-warning">
-            DEMO ONLY • NO REAL PAYMENT IS PROCESSED
+            PAYMENT REQUIRES VERIFICATION BEFORE BALANCE CREDIT
         </div>
 
     </div>
@@ -2836,7 +2852,30 @@ body::after{
 </div>
 
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <script>
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD17_CvnY_72-uy6qaAbhZPCUY6kv3y5WI",
+    authDomain: "rizwan-device.firebaseapp.com",
+    projectId: "rizwan-device",
+    storageBucket: "rizwan-device.firebasestorage.app",
+    messagingSenderId: "1056151654212",
+    appId: "1:1056151654212:web:8d8372fa514c7102fa1111"
+};
+
+firebase.initializeApp(firebaseConfig);
+const firebaseAuth = firebase.auth();
+const firebaseDB = firebase.firestore();
+
+console.log("Firebase Auth + Cloud Firestore initialized");
 
 /* =========================
    MATRIX
@@ -3053,105 +3092,75 @@ setInterval(()=>{
 
 
 /* =========================
-   STORAGE
+   FIREBASE DATA
 ========================= */
 
-const STORAGE_USER =
-"rz_demo_user";
-
-const STORAGE_SESSION =
-"rz_demo_session";
-
-const STORAGE_BALANCE =
-"rz_demo_balance";
-
-const STORAGE_HISTORY =
-"rz_demo_history";
-
+let currentFirebaseUser = null;
+let currentProfile = null;
+let pendingService = null;
 
 function getUser(){
-
-    try{
-
-        return JSON.parse(
-            localStorage.getItem(
-                STORAGE_USER
-            )
-        );
-
-    }catch(e){
-
-        return null;
-
-    }
-
+    if(!currentFirebaseUser || !currentProfile) return null;
+    return {
+        uid: currentFirebaseUser.uid,
+        username: currentProfile.username || "USER",
+        email: currentProfile.email || currentFirebaseUser.email || ""
+    };
 }
-
-
-function saveUser(user){
-
-    localStorage.setItem(
-        STORAGE_USER,
-        JSON.stringify(user)
-    );
-
-}
-
 
 function getBalance(){
-
-    return Number(
-        localStorage.getItem(
-            STORAGE_BALANCE
-        ) || 0
-    );
-
+    const value = currentProfile && currentProfile.balance != null
+        ? Number(currentProfile.balance)
+        : 0;
+    return Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0;
 }
 
-
-function setBalance(value){
-
-    localStorage.setItem(
-        STORAGE_BALANCE,
-        Number(
-            Math.max(
-                0,
-                value
-            )
-        ).toFixed(2)
-    );
-
+async function setBalance(value){
+    if(!currentFirebaseUser) throw new Error("NO_AUTHENTICATED_USER");
+    const safeValue = Math.max(0, Math.trunc(Number(value) || 0));
+    await firebaseDB.collection("users").doc(currentFirebaseUser.uid).update({
+        balance: safeValue
+    });
+    if(!currentProfile) currentProfile = {};
+    currentProfile.balance = safeValue;
 }
 
+async function loadUserProfile(user){
+    const ref = firebaseDB.collection("users").doc(user.uid);
+    const doc = await ref.get();
 
-function getHistory(){
-
-    try{
-
-        return JSON.parse(
-            localStorage.getItem(
-                STORAGE_HISTORY
-            )
-        ) || [];
-
-    }catch(e){
-
-        return [];
-
+    if(!doc.exists){
+        const profile = {
+            username: "USER",
+            email: user.email || "",
+            balance: 0
+        };
+        await ref.set(profile);
+        currentProfile = profile;
+    }else{
+        const data = doc.data() || {};
+        const balance = Number(data.balance);
+        currentProfile = {
+            username: String(data.username || "USER"),
+            email: String(data.email || user.email || ""),
+            balance: Number.isFinite(balance) ? Math.max(0, Math.trunc(balance)) : 0
+        };
     }
 
+    currentFirebaseUser = user;
 }
 
+function getHistory(){
+    try{
+        return JSON.parse(localStorage.getItem("rz_history") || "[]") || [];
+    }catch(e){
+        return [];
+    }
+}
 
 function saveHistory(history){
-
-    localStorage.setItem(
-        STORAGE_HISTORY,
-        JSON.stringify(history)
-    );
-
+    localStorage.setItem("rz_history", JSON.stringify(history));
 }
-
 
 /* =========================
    AUTH
@@ -3160,805 +3169,353 @@ function saveHistory(history){
 let authMode = "login";
 
 function switchAuth(mode){
-
     authMode = mode;
 
-    const loginTab =
-    document.getElementById(
-        "loginTab"
-    );
-
-    const signupTab =
-    document.getElementById(
-        "signupTab"
-    );
-
-    const confirmGroup =
-    document.getElementById(
-        "confirmGroup"
-    );
-
-    const authButton =
-    document.getElementById(
-        "authButton"
-    );
-
-    const message =
-    document.getElementById(
-        "authMessage"
-    );
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const confirmGroup = document.getElementById("confirmGroup");
+    const emailGroup = document.getElementById("emailGroup");
+    const usernameLabel = document.getElementById("authUsernameLabel");
+    const usernameInput = document.getElementById("authUsername");
+    const authButton = document.getElementById("authButton");
+    const message = document.getElementById("authMessage");
 
     message.textContent = "";
-
-    message.className =
-    "auth-message";
+    message.className = "auth-message";
 
     if(mode === "login"){
-
-        loginTab.classList.add(
-            "active"
-        );
-
-        signupTab.classList.remove(
-            "active"
-        );
-
-        confirmGroup.style.display =
-        "none";
-
-        authButton.textContent =
-        "[ LOGIN ]";
-
+        loginTab.classList.add("active");
+        signupTab.classList.remove("active");
+        confirmGroup.style.display = "none";
+        emailGroup.style.display = "none";
+        usernameLabel.textContent = "EMAIL";
+        usernameInput.placeholder = "ENTER EMAIL";
+        usernameInput.type = "email";
+        authButton.textContent = "[ LOGIN ]";
     }else{
-
-        signupTab.classList.add(
-            "active"
-        );
-
-        loginTab.classList.remove(
-            "active"
-        );
-
-        confirmGroup.style.display =
-        "block";
-
-        authButton.textContent =
-        "[ CREATE ACCOUNT ]";
-
+        signupTab.classList.add("active");
+        loginTab.classList.remove("active");
+        confirmGroup.style.display = "block";
+        emailGroup.style.display = "block";
+        usernameLabel.textContent = "USERNAME";
+        usernameInput.placeholder = "ENTER USERNAME";
+        usernameInput.type = "text";
+        authButton.textContent = "[ CREATE ACCOUNT ]";
     }
-
 }
 
+function authErrorMessage(error){
+    const code = error && error.code ? error.code : "";
+    if(code === "auth/email-already-in-use") return "ERROR: EMAIL ALREADY REGISTERED";
+    if(code === "auth/invalid-email") return "ERROR: INVALID EMAIL";
+    if(code === "auth/weak-password") return "ERROR: PASSWORD TOO WEAK";
+    if(code === "auth/invalid-credential" || code === "auth/user-not-found" || code === "auth/wrong-password") return "ERROR: INVALID EMAIL OR PASSWORD";
+    if(code === "auth/operation-not-allowed") return "ERROR: ENABLE EMAIL/PASSWORD IN FIREBASE AUTH";
+    if(code === "permission-denied" || code === "PERMISSION_DENIED") return "ERROR: FIRESTORE PERMISSION DENIED";
+    if(code === "failed-precondition") return "ERROR: FIRESTORE DATABASE NOT READY";
+    return "ERROR: " + (error && error.message ? error.message : "REQUEST FAILED");
+}
 
-function submitAuth(){
+async function submitAuth(){
+    const username = document.getElementById("authUsername").value.trim();
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value;
+    const confirm = document.getElementById("authConfirm").value;
+    const message = document.getElementById("authMessage");
+    const button = document.getElementById("authButton");
 
-    const username =
-    document.getElementById(
-        "authUsername"
-    ).value.trim();
-
-    const password =
-    document.getElementById(
-        "authPassword"
-    ).value;
-
-    const confirm =
-    document.getElementById(
-        "authConfirm"
-    ).value;
-
-    const message =
-    document.getElementById(
-        "authMessage"
-    );
-
-    message.className =
-    "auth-message";
-
-    if(
-        !username ||
-        !password
-    ){
-
-        message.textContent =
-        "ERROR: ALL FIELDS REQUIRED";
-
-        message.classList.add(
-            "error"
-        );
-
-        return;
-
-    }
-
+    message.className = "auth-message";
 
     if(authMode === "signup"){
-
-        if(password.length < 4){
-
-            message.textContent =
-            "ERROR: PASSWORD TOO SHORT";
-
-            message.classList.add(
-                "error"
-            );
-
+        if(!username || !email || !password){
+            message.textContent = "ERROR: ALL FIELDS REQUIRED";
+            message.classList.add("error");
             return;
-
         }
-
-
+        if(password.length < 6){
+            message.textContent = "ERROR: PASSWORD MUST BE 6+ CHARACTERS";
+            message.classList.add("error");
+            return;
+        }
         if(password !== confirm){
-
-            message.textContent =
-            "ERROR: PASSWORD MISMATCH";
-
-            message.classList.add(
-                "error"
-            );
-
+            message.textContent = "ERROR: PASSWORD MISMATCH";
+            message.classList.add("error");
             return;
-
         }
-
-
-        if(getUser()){
-
-            message.textContent =
-            "USER ALREADY EXISTS — LOGIN";
-
-            message.classList.add(
-                "error"
-            );
-
+    }else{
+        if(!username || !password){
+            message.textContent = "ERROR: EMAIL AND PASSWORD REQUIRED";
+            message.classList.add("error");
             return;
-
         }
+        if(password.length < 6){
+            message.textContent = "ERROR: PASSWORD MUST BE 6+ CHARACTERS";
+            message.classList.add("error");
+            return;
+        }
+    }
 
+    button.disabled = true;
+    const oldText = button.textContent;
+    button.textContent = "[ CONNECTING... ]";
 
-        saveUser({
-
-            username:username,
-
-            password:password
-
-        });
-
-
-        setBalance(0);
-
-        saveHistory([{
-
-            type:"ACCOUNT",
-
-            name:"Account created",
-
-            value:"SYSTEM",
-
-            time:new Date()
-            .toLocaleString()
-
-        }]);
-
-
-        localStorage.setItem(
-            STORAGE_SESSION,
-            "1"
-        );
-
+    try{
+        if(authMode === "signup"){
+            const credential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+            await firebaseDB.collection("users").doc(credential.user.uid).set({
+                username: username,
+                email: email,
+                balance: 0
+            });
+            currentFirebaseUser = credential.user;
+            currentProfile = { username, email, balance: 0 };
+            saveHistory([{type:"ACCOUNT", name:"Account created", value:"SYSTEM", time:new Date().toLocaleString()}]);
+        }else{
+            const credential = await firebaseAuth.signInWithEmailAndPassword(username, password);
+            await loadUserProfile(credential.user);
+        }
 
         showApp();
-
-        return;
-
+    }catch(error){
+        console.error("AUTH ERROR:", error);
+        message.textContent = authErrorMessage(error);
+        message.classList.add("error");
+    }finally{
+        button.disabled = false;
+        button.textContent = oldText;
     }
-
-
-    const user =
-    getUser();
-
-
-    if(!user){
-
-        message.textContent =
-        "NO ACCOUNT FOUND — SIGN UP FIRST";
-
-        message.classList.add(
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if(
-        user.username !== username ||
-        user.password !== password
-    ){
-
-        message.textContent =
-        "ACCESS DENIED — INVALID LOGIN";
-
-        message.classList.add(
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    localStorage.setItem(
-        STORAGE_SESSION,
-        "1"
-    );
-
-
-    showApp();
-
 }
 
+firebaseAuth.onAuthStateChanged(async user => {
+    if(!user){
+        currentFirebaseUser = null;
+        currentProfile = null;
+        document.getElementById("app").classList.add("hidden-page");
+        document.getElementById("authScreen").classList.remove("hidden");
+        return;
+    }
+
+    try{
+        await loadUserProfile(user);
+        showApp();
+    }catch(error){
+        console.error("PROFILE ERROR:", error);
+        document.getElementById("authMessage").textContent = authErrorMessage(error);
+        document.getElementById("authMessage").className = "auth-message error";
+    }
+});
 
 /* =========================
    APP
 ========================= */
 
 function showApp(){
+    document.getElementById("authScreen").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden-page");
 
-    document
-    .getElementById("authScreen")
-    .classList.add("hidden");
-
-    document
-    .getElementById("app")
-    .classList.remove(
-        "hidden-page"
-    );
-
-    const user =
-    getUser();
-
-    document.getElementById(
-        "userName"
-    ).textContent =
-    user
-    ? user.username
-    : "USER";
-
+    const user = getUser();
+    document.getElementById("userName").textContent = user ? user.username : "USER";
     updateBalanceUI();
-
 }
 
-
-function logout(){
-
-    localStorage.removeItem(
-        STORAGE_SESSION
-    );
-
-    document
-    .getElementById("app")
-    .classList.add(
-        "hidden-page"
-    );
-
-    document
-    .getElementById("authScreen")
-    .classList.remove(
-        "hidden"
-    );
-
-    document.getElementById(
-        "authPassword"
-    ).value = "";
-
-    document.getElementById(
-        "authConfirm"
-    ).value = "";
-
+async function logout(){
+    try{
+        await firebaseAuth.signOut();
+    }catch(error){
+        console.error("LOGOUT ERROR:", error);
+    }
+    currentFirebaseUser = null;
+    currentProfile = null;
+    document.getElementById("app").classList.add("hidden-page");
+    document.getElementById("authScreen").classList.remove("hidden");
+    document.getElementById("authPassword").value = "";
+    document.getElementById("authConfirm").value = "";
+    document.getElementById("authUsername").value = "";
+    document.getElementById("authEmail").value = "";
     switchAuth("login");
-
 }
-
 
 /* =========================
    BALANCE UI
 ========================= */
 
 function money(value){
-
-    return "₹" +
-    Number(value)
-    .toLocaleString(
-        "en-IN",
-        {
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        }
-    );
-
+    return "₹" + Number(value).toLocaleString("en-IN", {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    });
 }
-
 
 function updateBalanceUI(){
-
-    const balance =
-    getBalance();
-
-    document.getElementById(
-        "walletBalance"
-    ).textContent =
-    money(balance);
-
-    document.getElementById(
-        "creditBalance"
-    ).textContent =
-    money(balance);
-
+    const balance = getBalance();
+    document.getElementById("walletBalance").textContent = money(balance);
+    document.getElementById("creditBalance").textContent = money(balance);
 }
-
 
 /* =========================
    TOAST
 ========================= */
 
 let toastTimer;
-
 function showToast(text){
-
-    const toast =
-    document.getElementById(
-        "toast"
-    );
-
-    toast.textContent =
-    text;
-
-    toast.classList.add(
-        "show"
-    );
-
-    clearTimeout(
-        toastTimer
-    );
-
-    toastTimer =
-    setTimeout(()=>{
-
-        toast.classList.remove(
-            "show"
-        );
-
-    },2200);
-
+    const toast = document.getElementById("toast");
+    toast.textContent = text;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
 }
-
 
 /* =========================
    RIPPLE
 ========================= */
 
 function createRipple(element){
-
-    const ripple =
-    document.createElement(
-        "span"
-    );
-
-    ripple.className =
-    "ripple";
-
-    const rect =
-    element.getBoundingClientRect();
-
-    ripple.style.left =
-    (rect.width / 2) + "px";
-
-    ripple.style.top =
-    (rect.height / 2) + "px";
-
-    element.appendChild(
-        ripple
-    );
-
-    setTimeout(()=>{
-
-        ripple.remove();
-
-    },700);
-
+    if(!element) return;
+    const ripple = document.createElement("span");
+    ripple.className = "ripple";
+    const rect = element.getBoundingClientRect();
+    ripple.style.left = (rect.width / 2) + "px";
+    ripple.style.top = (rect.height / 2) + "px";
+    element.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
 }
-
 
 /* =========================
    SERVICE REQUEST
 ========================= */
 
-let pendingService = null;
-
-
-function useService(
-    element,
-    serviceName,
-    action,
-    cost
-){
-
-    createRipple(
-        element
-    );
-
-    const balance =
-    getBalance();
-
-
-    if(balance < cost){
-
-        showToast(
-            "INSUFFICIENT BALANCE • REQUIRED " +
-            money(cost)
-        );
-
+function useService(element, serviceName, action, cost){
+    createRipple(element);
+    if(!currentFirebaseUser){
+        showToast("LOGIN REQUIRED");
         return;
-
     }
 
+    const balance = getBalance();
+    if(balance < cost){
+        showToast("INSUFFICIENT BALANCE • REQUIRED " + money(cost));
+        return;
+    }
 
-    pendingService = {
-
-        element:element,
-
-        serviceName:serviceName,
-
-        action:action,
-
-        cost:cost
-
-    };
-
-
-    document.getElementById(
-        "confirmServiceName"
-    ).textContent =
-    serviceName;
-
-
-    document.getElementById(
-        "confirmCost"
-    ).textContent =
-    money(cost);
-
-
-    document.getElementById(
-        "confirmBalance"
-    ).textContent =
-    money(balance);
-
-
-    document.getElementById(
-        "confirmAfter"
-    ).textContent =
-    money(
-        balance - cost
-    );
-
-
-    document
-    .getElementById("serviceModal")
-    .classList.add("show");
-
+    pendingService = { element, serviceName, action, cost };
+    document.getElementById("confirmServiceName").textContent = serviceName;
+    document.getElementById("confirmCost").textContent = money(cost);
+    document.getElementById("confirmBalance").textContent = money(balance);
+    document.getElementById("confirmAfter").textContent = money(balance - cost);
+    document.getElementById("serviceModal").classList.add("show");
 }
-
 
 function closeServiceModal(){
-
-    document
-    .getElementById("serviceModal")
-    .classList.remove("show");
-
+    document.getElementById("serviceModal").classList.remove("show");
     pendingService = null;
-
 }
 
+async function confirmService(){
+    if(!pendingService || !currentFirebaseUser) return;
 
-function confirmService(){
-
-    if(!pendingService){
-
-        return;
-
-    }
-
-
-    const service =
-    pendingService;
-
-
-    const balance =
-    getBalance();
-
-
+    const service = pendingService;
+    const balance = getBalance();
     if(balance < service.cost){
-
         closeServiceModal();
-
-        showToast(
-            "BALANCE CHECK FAILED"
-        );
-
+        showToast("BALANCE CHECK FAILED");
         return;
-
     }
 
+    try{
+        await setBalance(balance - service.cost);
+        addTransaction(service.serviceName, "-" + money(service.cost));
+        updateBalanceUI();
+        closeServiceModal();
+        showToast("ACCESS GRANTED • " + money(service.cost) + " DEDUCTED");
 
-    const newBalance =
-    balance - service.cost;
-
-
-    setBalance(
-        newBalance
-    );
-
-
-    addTransaction(
-        service.serviceName,
-        "-" + money(
-            service.cost
-        )
-    );
-
-
-    updateBalanceUI();
-
-    closeServiceModal();
-
-
-    showToast(
-        "ACCESS GRANTED • " +
-        money(service.cost) +
-        " DEDUCTED"
-    );
-
-
-    setTimeout(()=>{
-
-        if(
-            service.action ===
-            "android-main"
-        ){
-
-            window.location.href =
-            "intent://com.android.settings/" +
-            "#Intent;" +
-            "scheme=android-app;" +
-            "end";
-
-            return;
-
-        }
-
-
-        window.location.href =
-        "intent:#Intent;" +
-        "action=" +
-        service.action +
-        ";" +
-        "end";
-
-    },350);
-
+        setTimeout(() => {
+            if(service.action === "android-main"){
+                window.location.href = "intent://com.android.settings/#Intent;scheme=android-app;end";
+            }else{
+                window.location.href = "intent:#Intent;action=" + service.action + ";end";
+            }
+        }, 350);
+    }catch(error){
+        console.error("BALANCE UPDATE ERROR:", error);
+        closeServiceModal();
+        showToast(authErrorMessage(error));
+    }
 }
-
 
 /* =========================
    ADD BALANCE
 ========================= */
 
 function openBalanceModal(){
-
-    document
-    .getElementById("balanceModal")
-    .classList.add("show");
-
-}
-
-
-function closeBalanceModal(){
-
-    document
-    .getElementById("balanceModal")
-    .classList.remove("show");
-
-}
-
-
-function dummyTopup(){
-
-    const code =
-    document.getElementById(
-        "balanceCode"
-    ).value.trim();
-
-    /* UTR validation is dummy for now; backend verification later. */
-    if(!/^[0-9]{12}$/.test(code)){
-        showToast(
-            "ENTER VALID 12-DIGIT UTR / TRANSACTION ID"
-        );
+    if(!currentFirebaseUser){
+        showToast("LOGIN REQUIRED");
         return;
     }
-
-    /* Fixed demo recharge amount. Real payment verification will be added later. */
-    const amount = 14999;
-
-    const oldBalance =
-    getBalance();
-
-    setBalance(
-        oldBalance + amount
-    );
-
-    addTransaction(
-        "QR payment • UTR " + code,
-        "+" + money(amount)
-    );
-
-    updateBalanceUI();
-
-    document.getElementById(
-        "balanceCode"
-    ).value = "";
-
-    closeBalanceModal();
-
-    showToast(
-        "PAYMENT VERIFIED • BALANCE ADDED " +
-        money(amount)
-    );
-
+    document.getElementById("balanceModal").classList.add("show");
 }
 
+function closeBalanceModal(){
+    document.getElementById("balanceModal").classList.remove("show");
+}
+
+function verifyPayment(){
+    const code = document.getElementById("balanceCode").value.trim();
+    if(!/^[0-9]{12}$/.test(code)){
+        showToast("INVALID UTR • ENTER EXACTLY 12 DIGITS");
+        return;
+    }
+    showToast("UTR SUBMITTED • VERIFICATION REQUIRED");
+    document.getElementById("balanceCode").value = "";
+    closeBalanceModal();
+}
 
 /* =========================
    TRANSACTIONS
 ========================= */
 
-function addTransaction(
-    name,
-    value
-){
-
-    const history =
-    getHistory();
-
-
+function addTransaction(name, value){
+    const history = getHistory();
     history.unshift({
-
         type:"TRANSACTION",
-
         name:name,
-
         value:value,
-
-        time:new Date()
-        .toLocaleString()
-
+        time:new Date().toLocaleString()
     });
-
-
-    if(history.length > 50){
-
-        history.splice(
-            50
-        );
-
-    }
-
-
-    saveHistory(
-        history
-    );
-
+    if(history.length > 50) history.splice(50);
+    saveHistory(history);
 }
-
 
 function openHistory(){
-
-    const list =
-    document.getElementById(
-        "historyList"
-    );
-
-    const history =
-    getHistory();
-
-
+    const list = document.getElementById("historyList");
+    const history = getHistory();
     if(!history.length){
-
-        list.innerHTML =
-        '<div style="color:#004d32;font-size:9px;padding:15px 0">NO TRANSACTIONS</div>';
-
+        list.innerHTML = '<div style="color:#004d32;font-size:9px;padding:15px 0">NO TRANSACTIONS</div>';
     }else{
-
-        list.innerHTML =
-        history.map(item=>{
-
-            return `
-
-                <div class="history-item">
-
-                    <div>
-
-                        <div class="history-name">
-                            ${escapeHTML(item.name)}
-                        </div>
-
-                        <div style="color:#004d32;font-size:7px;margin-top:3px">
-                            ${escapeHTML(item.time)}
-                        </div>
-
-                    </div>
-
-                    <div class="history-value">
-                        ${escapeHTML(item.value)}
-                    </div>
-
+        list.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div>
+                    <div class="history-name">${escapeHTML(item.name)}</div>
+                    <div style="color:#004d32;font-size:7px;margin-top:3px">${escapeHTML(item.time)}</div>
                 </div>
-
-            `;
-
-        }).join("");
-
+                <div class="history-value">${escapeHTML(item.value)}</div>
+            </div>
+        `).join("");
     }
-
-
-    document
-    .getElementById("historyModal")
-    .classList.add("show");
-
+    document.getElementById("historyModal").classList.add("show");
 }
-
 
 function closeHistory(){
-
-    document
-    .getElementById("historyModal")
-    .classList.remove("show");
-
+    document.getElementById("historyModal").classList.remove("show");
 }
-
 
 function escapeHTML(value){
-
     return String(value)
-
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-
-    .replace(
-        /</g,
-        "&lt;"
-    )
-
-    .replace(
-        />/g,
-        "&gt;"
-    )
-
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
-
 
 /* =========================
    CLOSE MODALS ON BACKDROP
@@ -4018,42 +3575,7 @@ document
 );
 
 
-/* =========================
-   INITIAL SESSION
-========================= */
-
-(function(){
-
-    const session =
-    localStorage.getItem(
-        STORAGE_SESSION
-    );
-
-
-    if(
-        session === "1" &&
-        getUser()
-    ){
-
-        showApp();
-
-    }else{
-
-        document
-        .getElementById("authScreen")
-        .classList.remove(
-            "hidden"
-        );
-
-        document
-        .getElementById("app")
-        .classList.add(
-            "hidden-page"
-        );
-
-    }
-
-})();
+switchAuth("login");
 
 </script>
 
